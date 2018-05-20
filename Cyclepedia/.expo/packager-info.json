@@ -1,8 +1,8 @@
 {
-  "expoServerPort": 19000,
-  "packagerPort": 19001,
-  "packagerPid": 19620,
-  "expoServerNgrokUrl": "https://wx-gwk.madrich27times.cyclepedia.exp.direct",
-  "packagerNgrokUrl": "https://packager.wx-gwk.madrich27times.cyclepedia.exp.direct",
-  "ngrokPid": 18720
+  "expoServerPort": null,
+  "packagerPort": null,
+  "packagerPid": null,
+  "expoServerNgrokUrl": null,
+  "packagerNgrokUrl": null,
+  "ngrokPid": null
 }
