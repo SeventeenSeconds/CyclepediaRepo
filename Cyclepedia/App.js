@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import { StyleSheet, Text, View, Image } from 'react-native';
 import { Geolocation } from './Geolocation';
+//import { AppLoading, Font } from '.expo';
 import { AppLoading, Font } from 'expo';
+
 import { colorStyles } from './constants/colors';
 import { RegisterScreen } from './screens/RegisterScreen';
 
