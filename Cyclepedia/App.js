@@ -3,6 +3,7 @@ import { StyleSheet, Text, View, Image } from 'react-native';
 import { Geolocation } from './Geolocation';
 import { AppLoading, Font } from 'expo';
 import { colorStyles } from './constants/colors';
+import { RegisterScreen } from './screens/RegisterScreen';
 
 export default class App extends React.Component {
   state = {
