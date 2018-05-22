@@ -3,6 +3,7 @@ import { StyleSheet, Text, View, Image } from 'react-native';
 import { Geolocation } from './Geolocation';
 import { AppLoading, Font } from 'expo';
 import { colorStyles } from './constants/colors';
+import { RootNavigation } from './navigation/RootNavigation';
 
 export default class App extends React.Component {
   state = {
@@ -59,6 +60,7 @@ export default class App extends React.Component {
         </View>
       </View>
 
+      {/*<RootNavigation/>*/}
     </View>
     )
   }
