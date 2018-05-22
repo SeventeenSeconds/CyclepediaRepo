@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Image } from 'react-native';
+import { StyleSheet, Text, View, Image,  } from 'react-native';
 import { Geolocation } from './Geolocation';
 import { AppLoading, Font } from 'expo';
-import { colorStyles } from './constants/colors';
-import { RootNavigation } from './navigation/RootNavigation';
+import colorStyles from './constants/colors';
+import RootNavigation from './navigation/RootNavigation';
 
 export default class App extends React.Component {
   state = {
@@ -25,54 +25,55 @@ export default class App extends React.Component {
     }
     return (
     <View style={styles.container}>
-      
-      <Text style={styles.headingFont}>
-        I am a Raleway heading
-      </Text>
-      <Text style={styles.bodyFont}>
-        I am Work Sans body text
-      </Text>
 
-      <View style={styles.grid}>
-        <View style={styles.iconContainer}>
-          <Image
-            source={require('./assets/images/fabicycle.png')}
-            style={styles.icon}
-          />
-        </View>
-        <View style={styles.iconContainer}>
-          <Image
-            source={require('./assets/images/fachart.png')}
-            style={styles.icon}
-          />
-        </View>
-        <View style={styles.iconContainer}>
-          <Image
-            source={require('./assets/images/faexclamation.png')}
-            style={styles.icon}
-          />
-        </View>
-        <View style={styles.iconContainer}>
-          <Image
-            source={require('./assets/images/fahome.png')}
-            style={styles.icon}
-          />
-        </View>
-      </View>
+      {/*<Text style={styles.headingFont}>*/}
+        {/*I am a Raleway heading*/}
+      {/*</Text>*/}
+      {/*<Text style={styles.bodyFont}>*/}
+        {/*I am Work Sans body text*/}
+      {/*</Text>*/}
 
-      {/*<RootNavigation/>*/}
+      {/*<View style={styles.grid}>*/}
+        {/*<View style={styles.iconContainer}>*/}
+          {/*<Image*/}
+            {/*source={require('./assets/images/fabicycle.png')}*/}
+            {/*style={styles.icon}*/}
+          {/*/>*/}
+        {/*</View>*/}
+        {/*<View style={styles.iconContainer}>*/}
+          {/*<Image*/}
+            {/*source={require('./assets/images/fachart.png')}*/}
+            {/*style={styles.icon}*/}
+          {/*/>*/}
+        {/*</View>*/}
+        {/*<View style={styles.iconContainer}>*/}
+          {/*<Image*/}
+            {/*source={require('./assets/images/faexclamation.png')}*/}
+            {/*style={styles.icon}*/}
+          {/*/>*/}
+        {/*</View>*/}
+        {/*<View style={styles.iconContainer}>*/}
+          {/*<Image*/}
+            {/*source={require('./assets/images/fahome.png')}*/}
+            {/*style={styles.icon}*/}
+          {/*/>*/}
+        {/*</View>*/}
+      {/*</View>*/}
+        <RootNavigation/>
+
+
     </View>
-    )
+    );
   }
 }
 
 const styles = StyleSheet.create({
   container: {
-    margin: 30,
+    // margin: 30,
     flex: 1,
     backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    // alignItems: 'center',
+    // justifyContent: 'center',
   },
   headingFont: {
     fontFamily: 'Raleway',
@@ -99,5 +100,8 @@ const styles = StyleSheet.create({
     width: undefined,
     height: undefined,
     resizeMode: 'contain'
-  }
+  },
+  bottomTabBar: {
+    fontSize: 20
+  },
 });

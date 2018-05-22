@@ -4,7 +4,7 @@ const yellow = '#F9DC5C';
 const green = '#E5F993';
 const blue = '#69A197';
 
-export const colorStyles = {
+export default colorStyles = {
   black: black,
   white: white,
   yellow: yellow,
