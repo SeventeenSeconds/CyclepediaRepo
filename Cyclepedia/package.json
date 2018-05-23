@@ -9,10 +9,12 @@
   },
   "dependencies": {
     "@mapbox/polyline": "^1.0.0",
+    "crypto-js": "^3.1.9-1",
     "expo": "^27.0.1",
     "native-base": "^2.2.1",
     "react": "16.3.1",
     "react-native": "https://github.com/expo/react-native/archive/sdk-27.0.0.tar.gz",
+    "react-native-bcrypt": "^2.4.0",
     "react-native-maps": "^0.21.0",
     "react-native-tabbar-bottom": "^1.0.4",
     "react-navigation": "^2.0.1",

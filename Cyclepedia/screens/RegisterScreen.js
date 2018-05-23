@@ -5,20 +5,15 @@ import {
     Text,
     View,
     StyleSheet,
-    Button
+    Button,
+    ScrollView
 } from 'react-native';
-import {
-    colorStyles
-} from '../constants/colors';
-
-// import bcrypt from 'react-native-bcrypt';
-const bcrypt = require('react-native-bcrypt');
-//import isaac from "isaac";
-//var bcrypt = require('bcryptjs');
-//var bcrypt = require("react-native-bcrypt");
+import colorStyles from '../constants/colors';
 
 var t = require('tcomb-form-native');
 const Form = t.form.Form;
+
+var crypto = require("crypto-js");
 
 const Email = t.refinement(t.String, email => {
     const reg = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
@@ -80,7 +75,11 @@ const formStyles = {
             fontSize: 18,
             marginBottom: 7,
             fontWeight: '600'
-        }
+        },
+        button: {
+            backgroundColor: colorStyles.green,
+            borderColor: colorStyles.green,
+        },
     }
 }
 
@@ -95,32 +94,26 @@ const formStyles = {
 //   });
 // }
 
-test = () => {
-    console.log("in test");
+encrypt = passwrd => {
+    console.log("in encrypt");
+
     var unencrypt = 'bacon';
-    // var passHash = bcrypt.hashSync('bacon', 8);
-    // console.log("hashed: ", passHash);
 
-    // bcrypt.genSalt(10, function (err, salt) {
-    // });
+    var ciphertext = crypto.AES.encrypt(passwrd, 'secret key 123');
+    console.log("encrypted text", ciphertext.toString());
 
-    bcrypt.hash(unencrypt, 10, function (err, hash) {
-        //unencrypt = hash;
-        console.log(hash);
-        bcrypt.compare(unencrypt, hash, function (err, res) {
-            console.log("before hash: ", unencrypt);
-            console.log("hashed: ", unencrypt);
-            console.log("T/F: ", res);
+    var bytes = crypto.AES.decrypt(ciphertext.toString(), 'secret key 123');
+    var plaintext = bytes.toString(crypto.enc.Utf8);
+    console.log("decrypted text", plaintext);
 
-            // if (res == true) {
-            //   userData.password = passHash;
-            //   //send user to persistence
-            // }
-        });
-    });
+    return ciphertext.toString();
 }
 
-export class RegisterScreen extends Component {
+export default class RegisterScreen extends React.Component {
+    static navigationOptions = {
+        title: 'Register',
+    };
+
     handleSubmit = () => {
         const userData = this._form.getValue();
         console.log('userData: ', userData);
@@ -129,52 +122,18 @@ export class RegisterScreen extends Component {
             console.log("in encrypt block");
             console.log('pass:', userData.password);
             const userPass = userData.password;
-            test();
 
-            var passHash;
+            var passHash = encrypt(userPass);
+            console.log("pass hash ", passHash);
+            userData.password = passHash;
+            //persist user from here
         }
-
-        // var passHash = bcrypt.hashSync('bacon', 8);
-
-        // console.log("hashed: ", passHash);
-
-        // bcrypt.compare('bacon', passHash, function (err, res) {
-        //       console.log("T/F: ", res);
-        // });
-
-        // bcrypt.setRandomFallback((len) => {
-        //   const buf = new Uint8Array(len);
-        //   return buf.map(() => Math.floor(isaac.random() * 256));
-        // });
-
-        // var passHash;
-        // //var hash = bcrypt.hash('bacon', 8);
-        // bcrypt.hash('bacon', 8, function (err, hash) {
-        //   passHash = hash;
-        // });
-
-        // console.log("hashed: ", passHash);
-
-        // bcrypt.compare('bacon', passHash, function (err, res) {
-        //       console.log("T/F: ", res);
-        // });
-
-        // const hash = bcrypt.hashSync(...)
-        // bcrypt.hash(userPass, 8, function (err, hash) {
-        //   passHash = hash;
-        //   hashDone(userPass);
-        // });
-        // hashDone = userPass => {
-        //   console.log('Hash Done: ' + passHash);
-        //   bcrypt.compare(userPass, passHash, function (err, res) {
-        //     console.log("T/F: " + res);
-        //   });
-        // }
     }
 
     render() {
         return (
             <View style={styles.container}>
+            <ScrollView>
               <Form
                   ref={c => this._form = c}
                   type={User}
@@ -184,6 +143,7 @@ export class RegisterScreen extends Component {
                   title="Sign Up"
                   onPress={this.handleSubmit}
               />
+              </ScrollView>
             </View>
         );
     }
@@ -192,9 +152,7 @@ export class RegisterScreen extends Component {
 const styles = StyleSheet.create({
     container: {
         justifyContent: 'center',
-        marginTop: 50,
         padding: 20,
         backgroundColor: colorStyles.white,
     },
 });
-
