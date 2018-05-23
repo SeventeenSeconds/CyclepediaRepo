@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import { Text, View, StyleSheet, Button } from 'react-native';
-import { colorStyles } from '../constants/colors';
+import { Text, View, StyleSheet, Button, ScrollView } from 'react-native';
+import colorStyles from '../constants/colors';
 
-var bcrypt = require('bcryptjs');
+// var bcrypt = require('bcryptjs');
 var t = require('tcomb-form-native');
 const Form = t.form.Form;
 
@@ -70,7 +70,7 @@ const formStyles = {
 //     });
 // });
 
-export class RegisterScreen extends Component {
+export default class RegisterScreen extends React.Component {
   handleSubmit = () => {
     const value = this._form.getValue();
     console.log('value: ', value);
@@ -79,6 +79,7 @@ export class RegisterScreen extends Component {
   
   render() {
     return (
+        <ScrollView>
       <View style={styles.container}>
         <Form 
           ref={c => this._form = c}
@@ -89,6 +90,7 @@ export class RegisterScreen extends Component {
           onPress={this.handleSubmit}
         />
       </View>
+        </ScrollView>
     );
   }
 }

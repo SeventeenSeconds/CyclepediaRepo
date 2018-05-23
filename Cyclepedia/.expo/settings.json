@@ -3,9 +3,5 @@
   "lanType": "ip",
   "dev": true,
   "minify": false,
-<<<<<<< HEAD
-  "urlRandomness": null
-=======
-  "urlRandomness": "wx-gwk"
->>>>>>> Emily01
+  "urlRandomness": "25-64v"
 }
