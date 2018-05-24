@@ -37,43 +37,6 @@ const Phone = t.refinement(t.String, contactPhone => {
     return phonePattern.test(contactPhone);
 });
 
-// const User = t.struct({
-//     email: Email,
-//     username: t.maybe(t.String),
-//     firstName: t.String,
-//     password: t.String,
-//     confirmPassword: this.samePassword,
-//     contactName: t.String,
-//     contactPhone: t.maybe(Phone),
-//     contactEmail: Email
-// });
-
-// const options = {
-//     fields: {
-//         email: {
-//             error: 'You must enter a valid email address'
-//         },
-//         firstName: {
-//             error: 'You must enter your first name'
-//         },
-//         password: {
-//             error: 'You must enter a password',
-//             secureTextEntry: true
-//         },
-//         confirmPassword: {
-//             error: 'Passwords must match',
-//             secureTextEntry: true
-//         },
-//         contactName: {
-//             error: 'You must enter your emergency contact\'s name'
-//         },
-//         contactEmail: {
-//             error: 'You must enter a valid email address for your emergency contact'
-//         },
-//     },
-//     stylesheet: formStyles,
-// };
-
 function comparePass(currentUser) {
     return currentUser.password === currentUser.confirmPassword;
 }
@@ -176,9 +139,6 @@ export default class RegisterScreen extends React.Component {
         if (formData != null) {
             this.validate = this._form.getValue();
         }
-        // if (user.confirmPassword != null && user.confirmPassword != "") {
-        //     this.validate = this._form.getValue();
-        // }
     }
 
     handleSubmit = () => {
@@ -201,8 +161,7 @@ export default class RegisterScreen extends React.Component {
             user.contactEmail = userData.contactEmail;
             user.contactName = userData.contactName;
             user.contactPhone = userData.contactPhone;
-            // this.state.user = userData;
-            
+            console.log("user obj ", user);
         }
     }
 
@@ -224,25 +183,14 @@ export default class RegisterScreen extends React.Component {
                 />
                 </ScrollView>
             </View>
-            // <View style={styles.container}>
-            // <ScrollView>
-            //   <Form
-            //       ref={c => this._form = c}
-            //       type={User}
-            //       options={options}
-            //   />
-            //   <Button
-            //       title="Sign Up"
-            //       onPress={this.handleSubmit}
-            //   />
-            //   </ScrollView>
-            // </View>
         );
     }
 }
 
 const styles = StyleSheet.create({
     container: {
+        display: 'flex',
+        flex: 1,
         justifyContent: 'center',
         padding: 20,
         backgroundColor: colorStyles.white,

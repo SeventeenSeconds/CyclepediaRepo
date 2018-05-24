@@ -1,6 +1,5 @@
 import React from 'react';
 import { View, ScrollView, StyleSheet, Text, Button } from 'react-native';
-import RegisterScreen from './RegisterScreen';
 
 export default class LoginScreen extends React.Component {
     static navigationOptions = {
