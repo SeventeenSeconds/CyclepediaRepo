@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, ScrollView, StyleSheet, AsyncStorage, Button } from 'react-native';
 import colorStyles from '../constants/colors';
+import {AppLoading} from 'expo';
 
 var t = require('tcomb-form-native');
 const Form = t.form.Form;
@@ -55,13 +56,27 @@ const formStyles = {
 }
 
 export default class LoginScreen extends React.Component {
-    state = {
-        'user': '',
-    }
-
     static navigationOptions = {
         title: 'Login',
     };
+
+    user = null;
+
+    async getUser(userData){
+        try {
+            const value = await AsyncStorage.getItem(userData.email.toString()).then((keyValue) => {
+                this.user = keyValue}, (error) => {
+                console.log(error)
+            });
+            if (this.user == null){
+                // User isn't found, create message to register
+                console.log("value is null");
+            }
+            console.log(this.user);
+        } catch (error) {
+            // internal fail
+        }
+    }
 
     handleLogin = () => {
         const userData = this._form.getValue();
@@ -76,8 +91,10 @@ export default class LoginScreen extends React.Component {
             // var passHash;
 
             // pulls user
-            AsyncStorage.getItem(userData.email).then((value) => this.setState({ 'user': value }));
-            console.log(this.state.user);
+
+            const user = this.getUser(userData);
+
+            console.log(user);
             this.props.navigation.navigate('Bottom');
         }
 

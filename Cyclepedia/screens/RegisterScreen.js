@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { View, StyleSheet, Button, ScrollView, AsyncStorage } from 'react-native';
+import React, {Component} from 'react';
+import {View, StyleSheet, Button, ScrollView, AsyncStorage} from 'react-native';
 import colorStyles from '../constants/colors';
 
 var user = {
@@ -11,7 +11,7 @@ var user = {
     contactPhone: null,
     contactEmail: null,
     rides: []
-}
+};
 
 var t = require('tcomb-form-native');
 const Form = t.form.Form;
@@ -28,43 +28,6 @@ const Phone = t.refinement(t.String, contactPhone => {
     return phonePattern.test(contactPhone);
 });
 
-// const User = t.struct({
-//     email: Email,
-//     username: t.maybe(t.String),
-//     firstName: t.String,
-//     password: t.String,
-//     confirmPassword: this.samePassword,
-//     contactName: t.String,
-//     contactPhone: t.maybe(Phone),
-//     contactEmail: Email
-// });
-
-// const options = {
-//     fields: {
-//         email: {
-//             error: 'You must enter a valid email address'
-//         },
-//         firstName: {
-//             error: 'You must enter your first name'
-//         },
-//         password: {
-//             error: 'You must enter a password',
-//             secureTextEntry: true
-//         },
-//         confirmPassword: {
-//             error: 'Passwords must match',
-//             secureTextEntry: true
-//         },
-//         contactName: {
-//             error: 'You must enter your emergency contact\'s name'
-//         },
-//         contactEmail: {
-//             error: 'You must enter a valid email address for your emergency contact'
-//         },
-//     },
-//     stylesheet: formStyles,
-// };
-
 function comparePass(currentUser) {
     return currentUser.password === currentUser.confirmPassword;
 }
@@ -79,7 +42,7 @@ const formStyles = {
             fontWeight: '600'
         },
         error: {
-            
+
             fontSize: 18,
             marginBottom: 7,
             fontWeight: '600'
@@ -163,7 +126,7 @@ export default class RegisterScreen extends React.Component {
 
     onChange(user) {
         const formData = this._form.getValue();
-        this.setState({ user });
+        this.setState({user});
         if (formData != null) {
             this.validate = this._form.getValue();
         }
@@ -181,12 +144,11 @@ export default class RegisterScreen extends React.Component {
             console.log('pass:', userData.password);
             const userPass = userData.password;
 
-            // saves the user object in async, key = email
-            AsyncStorage.setItem(userData.email , JSON.stringify(userData)).then(this.props.navigation.navigate("Bottom"));
-
             var passHash = encrypt(userPass);
+
             console.log("pass hash ", passHash);
             userData.password = passHash;
+
             //persist user from here
             user.email = userData.email;
             user.username = userData.username;
@@ -195,51 +157,42 @@ export default class RegisterScreen extends React.Component {
             user.contactEmail = userData.contactEmail;
             user.contactName = userData.contactName;
             user.contactPhone = userData.contactPhone;
-            // this.state.user = userData;
-            
+
+            AsyncStorage.setItem(user.email.toString(), JSON.stringify(user)).then(this.props.navigation.navigate("Bottom"));
+
         }
     }
 
     render() {
         return (
-            <ScrollView>
+
             <View style={styles.container}>
                 <ScrollView>
-                <Form
-                    ref={c => this._form = c}
-                    type={this.User}
-                    value={this.state.user}
-                    onChange={(u) => this.onChange(u)}
-                    options={this.options}
-                />
-                <Button
-                  title="Sign Up"
-                  disabled={this.validate? false: true}
-                  onPress={this.handleSubmit}
-                />
+                    <Form
+                        ref={c => this._form = c}
+                        type={this.User}
+                        value={this.state.user}
+                        onChange={(u) => this.onChange(u)}
+                        options={this.options}
+                    />
+                    <Button
+                        title="Sign Up"
+                        disabled={this.validate ? false : true}
+                        onPress={this.handleSubmit}
+                    />
                 </ScrollView>
             </View>
-            // <View style={styles.container}>
-            // <ScrollView>
-            //   <Form
-            //       ref={c => this._form = c}
-            //       type={User}
-            //       options={options}
-            //   />
-            //   <Button
-            //       title="Sign Up"
-            //       onPress={this.handleSubmit}
-            //   />
-            //   </ScrollView>
-            // </View>
+
         );
     }
 }
 
 const styles = StyleSheet.create({
     container: {
-        justifyContent: 'center',
-        padding: 20,
-        backgroundColor: colorStyles.white,
+        flex: 1,
+        backgroundColor: '#fff',
     },
 });
+
+
+
