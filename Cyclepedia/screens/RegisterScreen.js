@@ -1,18 +1,9 @@
-import React, {
-    Component
-} from 'react';
-import {
-    Text,
-    View,
-    StyleSheet,
-    Button
-} from 'react-native';
-import {
-    colorStyles
-} from '../constants/colors';
+import React, { Component } from 'react';
+import { View, StyleSheet, Button, ScrollView, AsyncStorage } from 'react-native';
+import colorStyles from '../constants/colors';
 
 // import bcrypt from 'react-native-bcrypt';
-const bcrypt = require('react-native-bcrypt');
+// const bcrypt = require('react-native-bcrypt');
 //import isaac from "isaac";
 //var bcrypt = require('bcryptjs');
 //var bcrypt = require("react-native-bcrypt");
@@ -37,7 +28,7 @@ const User = t.struct({
     password: t.String,
     contactName: t.String,
     contactPhone: t.maybe(Phone),
-    contactEmail: Email
+    contactEmail: Email,
 });
 
 const options = {
@@ -95,43 +86,51 @@ const formStyles = {
 //   });
 // }
 
-test = () => {
-    console.log("in test");
-    var unencrypt = 'bacon';
-    // var passHash = bcrypt.hashSync('bacon', 8);
-    // console.log("hashed: ", passHash);
+// test = () => {
+//     console.log("in test");
+//     var unencrypt = 'bacon';
+//     // var passHash = bcrypt.hashSync('bacon', 8);
+//     // console.log("hashed: ", passHash);
+//
+//     // bcrypt.genSalt(10, function (err, salt) {
+//     // });
+//
+//     bcrypt.hash(unencrypt, 10, function (err, hash) {
+//         //unencrypt = hash;
+//         console.log(hash);
+//         bcrypt.compare(unencrypt, hash, function (err, res) {
+//             console.log("before hash: ", unencrypt);
+//             console.log("hashed: ", unencrypt);
+//             console.log("T/F: ", res);
+//
+//             // if (res == true) {
+//             //   userData.password = passHash;
+//             //   //send user to persistence
+//             // }
+//         });
+//     });
+// }
 
-    // bcrypt.genSalt(10, function (err, salt) {
-    // });
+export default class RegisterScreen extends Component {
+    static navigationOptions = {
+        title: 'Register',
+    };
 
-    bcrypt.hash(unencrypt, 10, function (err, hash) {
-        //unencrypt = hash;
-        console.log(hash);
-        bcrypt.compare(unencrypt, hash, function (err, res) {
-            console.log("before hash: ", unencrypt);
-            console.log("hashed: ", unencrypt);
-            console.log("T/F: ", res);
-
-            // if (res == true) {
-            //   userData.password = passHash;
-            //   //send user to persistence
-            // }
-        });
-    });
-}
-
-export class RegisterScreen extends Component {
     handleSubmit = () => {
         const userData = this._form.getValue();
         console.log('userData: ', userData);
 
         if (userData != null) {
-            console.log("in encrypt block");
-            console.log('pass:', userData.password);
-            const userPass = userData.password;
-            test();
+            // console.log("in encrypt block");
+            // console.log('pass:', userData.password);
+            // const userPass = userData.password;
+            // test();
+            //
+            // var passHash;
 
-            var passHash;
+            // saves the user object in async, key = email
+            AsyncStorage.setItem(userData.email , JSON.stringify(userData)).then(this.props.navigation.navigate("Bottom"));
+
         }
 
         // var passHash = bcrypt.hashSync('bacon', 8);
@@ -174,6 +173,7 @@ export class RegisterScreen extends Component {
 
     render() {
         return (
+            <ScrollView>
             <View style={styles.container}>
               <Form
                   ref={c => this._form = c}
@@ -185,6 +185,7 @@ export class RegisterScreen extends Component {
                   onPress={this.handleSubmit}
               />
             </View>
+            </ScrollView>
         );
     }
 }
