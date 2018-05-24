@@ -6,7 +6,8 @@ import {
     View,
     StyleSheet,
     Button,
-    ScrollView
+    ScrollView,
+    TouchableOpacity
 } from 'react-native';
 import colorStyles from '../constants/colors';
 
@@ -25,37 +26,42 @@ const Phone = t.refinement(t.String, contactPhone => {
     return phonePattern.test(contactPhone);
 });
 
-const User = t.struct({
-    email: Email,
-    username: t.maybe(t.String),
-    firstName: t.String,
-    password: t.String,
-    contactName: t.String,
-    contactPhone: t.maybe(Phone),
-    contactEmail: Email
-});
+// const User = t.struct({
+//     email: Email,
+//     username: t.maybe(t.String),
+//     firstName: t.String,
+//     password: t.String,
+//     confirmPassword: this.samePassword,
+//     contactName: t.String,
+//     contactPhone: t.maybe(Phone),
+//     contactEmail: Email
+// });
 
-const options = {
-    fields: {
-        email: {
-            error: 'You must enter a valid email address'
-        },
-        firstName: {
-            error: 'You must enter your first name'
-        },
-        password: {
-            error: 'You must enter a password',
-            secureTextEntry: true
-        },
-        contactName: {
-            error: 'You must enter your emergency contact\'s name'
-        },
-        contactEmail: {
-            error: 'You must enter a valid email address for your emergency contact'
-        },
-    },
-    stylesheet: formStyles,
-};
+// const options = {
+//     fields: {
+//         email: {
+//             error: 'You must enter a valid email address'
+//         },
+//         firstName: {
+//             error: 'You must enter your first name'
+//         },
+//         password: {
+//             error: 'You must enter a password',
+//             secureTextEntry: true
+//         },
+//         confirmPassword: {
+//             error: 'Passwords must match',
+//             secureTextEntry: true
+//         },
+//         contactName: {
+//             error: 'You must enter your emergency contact\'s name'
+//         },
+//         contactEmail: {
+//             error: 'You must enter a valid email address for your emergency contact'
+//         },
+//     },
+//     stylesheet: formStyles,
+// };
 
 function comparePass(currentUser) {
     return currentUser.password === currentUser.confirmPassword;
@@ -65,13 +71,13 @@ const formStyles = {
     ...Form.stylesheet,
     controlLabel: {
         normal: {
-            color: colorStyles.blue,
+            color: colorStyles.black,
             fontSize: 18,
             marginBottom: 7,
             fontWeight: '600'
         },
         error: {
-            color: 'red',
+            
             fontSize: 18,
             marginBottom: 7,
             fontWeight: '600'
@@ -82,17 +88,6 @@ const formStyles = {
         },
     }
 }
-
-// if (confirmPassword(userData) != true) {
-//   t.update(options, {
-//     fields: {
-//       confirmPassword: {
-//         hasError: { $set: true },
-//         error: { $set: 'Passwords must match' }
-//       }
-//     }
-//   });
-// }
 
 encrypt = passwrd => {
     console.log("in encrypt");
@@ -114,6 +109,67 @@ export default class RegisterScreen extends React.Component {
         title: 'Register',
     };
 
+    constructor(props) {
+        super(props);
+        this.state = {
+            user: {}
+        };
+
+        const passMatch = t.refinement(t.String, (s) => {
+            //console.log("match? ", s == this.state.user.password);
+            return s == this.state.user.password;
+        });
+
+        this.User = t.struct({
+            email: Email,
+            username: t.maybe(t.String),
+            firstName: t.String,
+            password: t.String,
+            confirmPassword: passMatch,
+            contactName: t.String,
+            contactPhone: t.maybe(Phone),
+            contactEmail: Email
+        });
+
+        this.options = {
+            fields: {
+                email: {
+                    error: 'You must enter a valid email address'
+                },
+                firstName: {
+                    error: 'You must enter your first name'
+                },
+                password: {
+                    error: 'You must enter a password',
+                    secureTextEntry: true
+                },
+                confirmPassword: {
+                    error: 'Passwords must match',
+                    secureTextEntry: true
+                },
+                contactName: {
+                    error: 'You must enter your emergency contact\'s name'
+                },
+                contactEmail: {
+                    error: 'You must enter a valid email address for your emergency contact'
+                },
+            },
+            stylesheet: formStyles,
+        };
+        this.validate = null;
+    }
+
+    onChange(user) {
+        const formData = this._form.getValue();
+        this.setState({ user });
+        if (formData != null) {
+            this.validate = this._form.getValue();
+        }
+        // if (user.confirmPassword != null && user.confirmPassword != "") {
+        //     this.validate = this._form.getValue();
+        // }
+    }
+
     handleSubmit = () => {
         const userData = this._form.getValue();
         console.log('userData: ', userData);
@@ -133,18 +189,34 @@ export default class RegisterScreen extends React.Component {
     render() {
         return (
             <View style={styles.container}>
-            <ScrollView>
-              <Form
-                  ref={c => this._form = c}
-                  type={User}
-                  options={options}
-              />
-              <Button
+                <ScrollView>
+                <Form
+                    ref={c => this._form = c}
+                    type={this.User}
+                    value={this.state.user}
+                    onChange={(u) => this.onChange(u)}
+                    options={this.options}
+                />
+                <Button
                   title="Sign Up"
+                  disabled={this.validate? false: true}
                   onPress={this.handleSubmit}
-              />
-              </ScrollView>
+                />
+                </ScrollView>
             </View>
+            // <View style={styles.container}>
+            // <ScrollView>
+            //   <Form
+            //       ref={c => this._form = c}
+            //       type={User}
+            //       options={options}
+            //   />
+            //   <Button
+            //       title="Sign Up"
+            //       onPress={this.handleSubmit}
+            //   />
+            //   </ScrollView>
+            // </View>
         );
     }
 }
