@@ -1,14 +1,5 @@
-import React, {
-    Component
-} from 'react';
-import {
-    Text,
-    View,
-    StyleSheet,
-    Button,
-    ScrollView,
-    TouchableOpacity
-} from 'react-native';
+import React, {Component} from 'react';
+import {View, StyleSheet, Button, ScrollView, AsyncStorage} from 'react-native';
 import colorStyles from '../constants/colors';
 
 var user = {
@@ -20,7 +11,7 @@ var user = {
     contactPhone: null,
     contactEmail: null,
     rides: []
-}
+};
 
 var t = require('tcomb-form-native');
 const Form = t.form.Form;
@@ -51,7 +42,7 @@ const formStyles = {
             fontWeight: '600'
         },
         error: {
-            
+
             fontSize: 18,
             marginBottom: 7,
             fontWeight: '600'
@@ -135,7 +126,7 @@ export default class RegisterScreen extends React.Component {
 
     onChange(user) {
         const formData = this._form.getValue();
-        this.setState({ user });
+        this.setState({user});
         if (formData != null) {
             this.validate = this._form.getValue();
         }
@@ -151,8 +142,10 @@ export default class RegisterScreen extends React.Component {
             const userPass = userData.password;
 
             var passHash = encrypt(userPass);
+
             console.log("pass hash ", passHash);
             userData.password = passHash;
+
             //persist user from here
             user.email = userData.email;
             user.username = userData.username;
@@ -162,25 +155,29 @@ export default class RegisterScreen extends React.Component {
             user.contactName = userData.contactName;
             user.contactPhone = userData.contactPhone;
             console.log("user obj ", user);
+
+            AsyncStorage.setItem(user.email.toString(), JSON.stringify(user)).then(this.props.navigation.navigate("Bottom"));
+
         }
     }
 
     render() {
         return (
+
             <View style={styles.container}>
                 <ScrollView>
-                <Form
-                    ref={c => this._form = c}
-                    type={this.User}
-                    value={this.state.user}
-                    onChange={(u) => this.onChange(u)}
-                    options={this.options}
-                />
-                <Button
-                  title="Sign Up"
-                  disabled={this.validate? false: true}
-                  onPress={this.handleSubmit}
-                />
+                    <Form
+                        ref={c => this._form = c}
+                        type={this.User}
+                        value={this.state.user}
+                        onChange={(u) => this.onChange(u)}
+                        options={this.options}
+                    />
+                    <Button
+                        title="Sign Up"
+                        disabled={this.validate ? false : true}
+                        onPress={this.handleSubmit}
+                    />
                 </ScrollView>
             </View>
         );
@@ -196,3 +193,6 @@ const styles = StyleSheet.create({
         backgroundColor: colorStyles.white,
     },
 });
+
+
+
