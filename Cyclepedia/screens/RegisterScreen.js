@@ -11,6 +11,17 @@ import {
 } from 'react-native';
 import colorStyles from '../constants/colors';
 
+var user = {
+    email: null,
+    username: null,
+    firstName: null,
+    password: null,
+    contactName: null,
+    contactPhone: null,
+    contactEmail: null,
+    rides: []
+}
+
 var t = require('tcomb-form-native');
 const Form = t.form.Form;
 
@@ -183,6 +194,15 @@ export default class RegisterScreen extends React.Component {
             console.log("pass hash ", passHash);
             userData.password = passHash;
             //persist user from here
+            user.email = userData.email;
+            user.username = userData.username;
+            user.password = userData.password;
+            user.firstName = userData.firstName;
+            user.contactEmail = userData.contactEmail;
+            user.contactName = userData.contactName;
+            user.contactPhone = userData.contactPhone;
+            // this.state.user = userData;
+            
         }
     }
 
