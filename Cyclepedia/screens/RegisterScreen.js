@@ -28,9 +28,9 @@ const Phone = t.refinement(t.String, contactPhone => {
     return phonePattern.test(contactPhone);
 });
 
-function comparePass(currentUser) {
-    return currentUser.password === currentUser.confirmPassword;
-}
+// function comparePass(currentUser) {
+//     return currentUser.password === currentUser.confirmPassword;
+// }
 
 const formStyles = {
     ...Form.stylesheet,
@@ -140,24 +140,26 @@ export default class RegisterScreen extends React.Component {
         try {
             var u = null;
             const value = await AsyncStorage.getItem(userData.email.toString()).then((keyValue) => {
-                u = keyValue}, (error) => {
+                u = keyValue, console.log("user: " + u)}, (error) => {
                 console.log(error);
-                //TODO: message, internal error
+                this.setState({userMessage: "Error retrieving user data, please try again."});
             });
-            if (u != null) {
-                return true;
+            if(u != null) {
+                this.setState({userMessage: "User already exists. Please login."});
+            } else {
+                AsyncStorage.setItem(userData.email.toString(), JSON.stringify(user));
             }
-            return false;
+
         } catch (error) {
-            console.log("Internal Error");
-            //TODO: Set message
+            console.log("Internal Error under try");
+            console.log(error);
+            this.setState({userMessage: "Error retrieving user data, please try again."});
         }
     }
 
     handleSubmit = () => {
         const userData = this._form.getValue();
         console.log('userData: ', userData);
-        var message = null;
 
         if (userData != null) {
             console.log("in encrypt block");
@@ -179,11 +181,10 @@ export default class RegisterScreen extends React.Component {
             user.contactPhone = userData.contactPhone;
 
             // checking that the user doesn't exist
-            if(this.getUser(userData)){
-                this.setState({userMessage: "This email is already in use. Please login." });
-            } else {
-                AsyncStorage.setItem(user.email.toString(), JSON.stringify(user)).then(this.props.navigation.navigate("Bottom"));
-            }
+            var newUser = this.getUser(userData);
+
+            //TODO: pass in newUser as props when navigating to stats page
+            this.props.navigation.navigate("Bottom");
 
         }
     }
@@ -206,7 +207,7 @@ export default class RegisterScreen extends React.Component {
                         disabled={this.validate ? false : true}
                         onPress={this.handleSubmit}
                     />
-                    <Text>{this.state.userMessage}</Text>
+                    <Text style={styles.error}>{this.state.userMessage}</Text>
                 </ScrollView>
             </View>
 
