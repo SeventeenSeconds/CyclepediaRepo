@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {View, StyleSheet, Button, ScrollView, AsyncStorage} from 'react-native';
+import {View, StyleSheet, Button, ScrollView, AsyncStorage, Text} from 'react-native';
 import colorStyles from '../constants/colors';
 
 var user = {
@@ -77,7 +77,8 @@ export default class RegisterScreen extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            user: {}
+            user: {},
+            userMessage: "",
         };
 
         const passMatch = t.refinement(t.String, (s) => {
@@ -135,9 +136,28 @@ export default class RegisterScreen extends React.Component {
         // }
     }
 
+    async getUser(userData){
+        try {
+            var u = null;
+            const value = await AsyncStorage.getItem(userData.email.toString()).then((keyValue) => {
+                u = keyValue}, (error) => {
+                console.log(error);
+                //TODO: message, internal error
+            });
+            if (u != null) {
+                return true;
+            }
+            return false;
+        } catch (error) {
+            console.log("Internal Error");
+            //TODO: Set message
+        }
+    }
+
     handleSubmit = () => {
         const userData = this._form.getValue();
         console.log('userData: ', userData);
+        var message = null;
 
         if (userData != null) {
             console.log("in encrypt block");
@@ -158,7 +178,12 @@ export default class RegisterScreen extends React.Component {
             user.contactName = userData.contactName;
             user.contactPhone = userData.contactPhone;
 
-            AsyncStorage.setItem(user.email.toString(), JSON.stringify(user)).then(this.props.navigation.navigate("Bottom"));
+            // checking that the user doesn't exist
+            if(this.getUser(userData)){
+                this.setState({userMessage: "This email is already in use. Please login." });
+            } else {
+                AsyncStorage.setItem(user.email.toString(), JSON.stringify(user)).then(this.props.navigation.navigate("Bottom"));
+            }
 
         }
     }
@@ -168,6 +193,7 @@ export default class RegisterScreen extends React.Component {
 
             <View style={styles.container}>
                 <ScrollView>
+
                     <Form
                         ref={c => this._form = c}
                         type={this.User}
@@ -180,6 +206,7 @@ export default class RegisterScreen extends React.Component {
                         disabled={this.validate ? false : true}
                         onPress={this.handleSubmit}
                     />
+                    <Text>{this.state.userMessage}</Text>
                 </ScrollView>
             </View>
 
@@ -192,6 +219,9 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#fff',
     },
+    error: {
+        color: "red",
+    }
 });
 
 
