@@ -1,7 +1,9 @@
 import React from 'react';
-import { View, ScrollView, StyleSheet, AsyncStorage, Button } from 'react-native';
+import { View, ScrollView, StyleSheet, AsyncStorage, Button, Text } from 'react-native';
 import colorStyles from '../constants/colors';
 import {AppLoading} from 'expo';
+
+var crypto = require("crypto-js");
 
 var t = require('tcomb-form-native');
 const Form = t.form.Form;
@@ -37,6 +39,27 @@ function comparePass(currentUser) {
     return currentUser.password === currentUser.confirmPassword;
 }
 
+// encrypt = passwrd => {
+//     console.log("in encrypt");
+//
+//     var unencrypt = 'bacon';
+//
+//     var ciphertext = crypto.AES.encrypt(passwrd, 'secret key 123');
+//     console.log("encrypted text", ciphertext.toString());
+//
+//     var bytes = crypto.AES.decrypt(ciphertext.toString(), 'secret key 123');
+//     var plaintext = bytes.toString(crypto.enc.Utf8);
+//     console.log("decrypted text", plaintext);
+//
+//     return ciphertext.toString();
+// }
+
+decrypt = passwrd => {
+    var bytes = crypto.AES.decrypt(ciphertext.toString(), 'secret key 123');
+    var plaintext = bytes.toString(crypto.enc.Utf8);
+    return plaintext;
+}
+
 const formStyles = {
     ...Form.stylesheet,
     controlLabel: {
@@ -62,19 +85,36 @@ export default class LoginScreen extends React.Component {
 
     user = null;
 
+    state = {
+        userMessage: "",
+    }
+
     async getUser(userData){
         try {
+            var u = null;
             const value = await AsyncStorage.getItem(userData.email.toString()).then((keyValue) => {
-                this.user = keyValue}, (error) => {
-                console.log(error)
+                u = keyValue}, (error) => {
+                console.log(error);
+                console.log("Internal Error");
+                //TODO: message, internal error
             });
-            if (this.user == null){
-                // User isn't found, create message to register
-                console.log("value is null");
+            if (u != null) {
+                // user exists, hash password in form, compare the returned users hashed password
+                const userPass = decrypt(u.password);
+                if(userPass == u.password){
+                    //TODO: user logged in, navigate to bottom tab
+                    console.log("Successfully logged in!");
+                } else {
+                    //TODO: wrong password, try again
+                    console.log("wrong password, try again");
+                }
+            } else {
+                //TODO: User doesn't exist, please register
+                console.log("User doesn't exists, please register");
             }
-            console.log(this.user);
         } catch (error) {
-            // internal fail
+            console.log("Internal Error in catch");
+            //TODO: Set message
         }
     }
 
@@ -94,8 +134,8 @@ export default class LoginScreen extends React.Component {
 
             const user = this.getUser(userData);
 
-            console.log(user);
-            this.props.navigation.navigate('Bottom');
+            // console.log(user);
+            // this.props.navigation.navigate('Bottom');
         }
 
     }
@@ -113,6 +153,7 @@ export default class LoginScreen extends React.Component {
                         title="Login"
                         onPress={this.handleLogin}
                     />
+                    <Text style={styles.error}>{this.state.userMessage}</Text>
                 </View>
             </ScrollView>
         );
@@ -131,4 +172,7 @@ const styles = StyleSheet.create({
         padding: 20,
         backgroundColor: colorStyles.white,
     },
+    error: {
+        color: "red",
+    }
 });

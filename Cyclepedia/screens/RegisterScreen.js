@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {View, StyleSheet, Button, ScrollView, AsyncStorage} from 'react-native';
+import {View, StyleSheet, Button, ScrollView, AsyncStorage, Text} from 'react-native';
 import colorStyles from '../constants/colors';
 
 var user = {
@@ -28,9 +28,9 @@ const Phone = t.refinement(t.String, contactPhone => {
     return phonePattern.test(contactPhone);
 });
 
-function comparePass(currentUser) {
-    return currentUser.password === currentUser.confirmPassword;
-}
+// function comparePass(currentUser) {
+//     return currentUser.password === currentUser.confirmPassword;
+// }
 
 const formStyles = {
     ...Form.stylesheet,
@@ -77,7 +77,8 @@ export default class RegisterScreen extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            user: {}
+            user: {},
+            userMessage: "",
         };
 
         const passMatch = t.refinement(t.String, (s) => {
@@ -132,6 +133,27 @@ export default class RegisterScreen extends React.Component {
         }
     }
 
+    async getUser(userData){
+        try {
+            var u = null;
+            const value = await AsyncStorage.getItem(userData.email.toString()).then((keyValue) => {
+                u = keyValue, console.log("user: " + u)}, (error) => {
+                console.log(error);
+                this.setState({userMessage: "Error retrieving user data, please try again."});
+            });
+            if(u != null) {
+                this.setState({userMessage: "User already exists. Please login."});
+            } else {
+                AsyncStorage.setItem(userData.email.toString(), JSON.stringify(user));
+            }
+
+        } catch (error) {
+            console.log("Internal Error under try");
+            console.log(error);
+            this.setState({userMessage: "Error retrieving user data, please try again."});
+        }
+    }
+
     handleSubmit = () => {
         const userData = this._form.getValue();
         console.log('userData: ', userData);
@@ -156,7 +178,11 @@ export default class RegisterScreen extends React.Component {
             user.contactPhone = userData.contactPhone;
             console.log("user obj ", user);
 
-            AsyncStorage.setItem(user.email.toString(), JSON.stringify(user)).then(this.props.navigation.navigate("Bottom"));
+            // checking that the user doesn't exist
+            var newUser = this.getUser(userData);
+
+            //TODO: pass in newUser as props when navigating to stats page
+            this.props.navigation.navigate("Bottom");
 
         }
     }
@@ -166,6 +192,7 @@ export default class RegisterScreen extends React.Component {
 
             <View style={styles.container}>
                 <ScrollView>
+
                     <Form
                         ref={c => this._form = c}
                         type={this.User}
@@ -178,6 +205,7 @@ export default class RegisterScreen extends React.Component {
                         disabled={this.validate ? false : true}
                         onPress={this.handleSubmit}
                     />
+                    <Text style={styles.error}>{this.state.userMessage}</Text>
                 </ScrollView>
             </View>
         );
@@ -192,6 +220,9 @@ const styles = StyleSheet.create({
         padding: 20,
         backgroundColor: colorStyles.white,
     },
+    error: {
+        color: "red",
+    }
 });
 
 
