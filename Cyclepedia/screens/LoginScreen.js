@@ -39,19 +39,25 @@ function comparePass(currentUser) {
     return currentUser.password === currentUser.confirmPassword;
 }
 
-encrypt = passwrd => {
-    console.log("in encrypt");
+// encrypt = passwrd => {
+//     console.log("in encrypt");
+//
+//     var unencrypt = 'bacon';
+//
+//     var ciphertext = crypto.AES.encrypt(passwrd, 'secret key 123');
+//     console.log("encrypted text", ciphertext.toString());
+//
+//     var bytes = crypto.AES.decrypt(ciphertext.toString(), 'secret key 123');
+//     var plaintext = bytes.toString(crypto.enc.Utf8);
+//     console.log("decrypted text", plaintext);
+//
+//     return ciphertext.toString();
+// }
 
-    var unencrypt = 'bacon';
-
-    var ciphertext = crypto.AES.encrypt(passwrd, 'secret key 123');
-    console.log("encrypted text", ciphertext.toString());
-
+decrypt = passwrd => {
     var bytes = crypto.AES.decrypt(ciphertext.toString(), 'secret key 123');
     var plaintext = bytes.toString(crypto.enc.Utf8);
-    console.log("decrypted text", plaintext);
-
-    return ciphertext.toString();
+    return plaintext;
 }
 
 const formStyles = {
@@ -89,13 +95,13 @@ export default class LoginScreen extends React.Component {
             const value = await AsyncStorage.getItem(userData.email.toString()).then((keyValue) => {
                 u = keyValue}, (error) => {
                 console.log(error);
+                console.log("Internal Error");
                 //TODO: message, internal error
             });
             if (u != null) {
-                // user exists, hash password in form, compare the returned user's hashed password
-                const userPass = userData.password;
-                var passHash = encrypt(userPass);
-                if(passHash == u.password){
+                // user exists, hash password in form, compare the returned users hashed password
+                const userPass = decrypt(u.password);
+                if(userPass == u.password){
                     //TODO: user logged in, navigate to bottom tab
                     console.log("Successfully logged in!");
                 } else {
@@ -107,7 +113,7 @@ export default class LoginScreen extends React.Component {
                 console.log("User doesn't exists, please register");
             }
         } catch (error) {
-            console.log("Internal Error");
+            console.log("Internal Error in catch");
             //TODO: Set message
         }
     }
