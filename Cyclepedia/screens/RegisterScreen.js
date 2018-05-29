@@ -79,6 +79,7 @@ export default class RegisterScreen extends React.Component {
         this.state = {
             user: {},
             userMessage: "",
+            userCreated: false,
         };
 
         const passMatch = t.refinement(t.String, (s) => {
@@ -147,6 +148,7 @@ export default class RegisterScreen extends React.Component {
             if(u != null) {
                 this.setState({userMessage: "User already exists. Please login."});
             } else {
+                this.setState({userCreated: true});
                 AsyncStorage.setItem(userData.email.toString(), JSON.stringify(user));
             }
 
@@ -167,14 +169,12 @@ export default class RegisterScreen extends React.Component {
             const userPass = userData.password;
 
             var passHash = encrypt(userPass);
-
             console.log("pass hash ", passHash);
-            userData.password = passHash;
 
             //persist user from here
             user.email = userData.email;
             user.username = userData.username;
-            user.password = userData.password;
+            user.password = passHash;
             user.firstName = userData.firstName;
             user.contactEmail = userData.contactEmail;
             user.contactName = userData.contactName;
@@ -183,8 +183,11 @@ export default class RegisterScreen extends React.Component {
             // checking that the user doesn't exist
             var newUser = this.getUser(userData);
 
-            //TODO: pass in newUser as props when navigating to stats page
-            this.props.navigation.navigate("Bottom");
+            //TODO: pass in newUser as props when navigating to stats page??
+            //TODO: only navigate to page only if the user has been created: bool?
+            if(this.state.userCreated){
+                this.props.navigation.navigate("Bottom");
+            }
 
         }
     }

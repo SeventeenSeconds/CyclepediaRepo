@@ -39,20 +39,20 @@ function comparePass(currentUser) {
     return currentUser.password === currentUser.confirmPassword;
 }
 
-// encrypt = passwrd => {
-//     console.log("in encrypt");
-//
-//     var unencrypt = 'bacon';
-//
-//     var ciphertext = crypto.AES.encrypt(passwrd, 'secret key 123');
-//     console.log("encrypted text", ciphertext.toString());
-//
-//     var bytes = crypto.AES.decrypt(ciphertext.toString(), 'secret key 123');
-//     var plaintext = bytes.toString(crypto.enc.Utf8);
-//     console.log("decrypted text", plaintext);
-//
-//     return ciphertext.toString();
-// }
+encrypt = passwrd => {
+    console.log("in encrypt");
+
+    var unencrypt = 'bacon';
+
+    var ciphertext = crypto.AES.encrypt(passwrd, 'secret key 123');
+    console.log("encrypted text", ciphertext.toString());
+
+    var bytes = crypto.AES.decrypt(ciphertext.toString(), 'secret key 123');
+    var plaintext = bytes.toString(crypto.enc.Utf8);
+    console.log("decrypted text", plaintext);
+
+    return ciphertext.toString();
+}
 
 decrypt = passwrd => {
     var bytes = crypto.AES.decrypt(ciphertext.toString(), 'secret key 123');
@@ -93,14 +93,14 @@ export default class LoginScreen extends React.Component {
         try {
             var u = null;
             const value = await AsyncStorage.getItem(userData.email.toString()).then((keyValue) => {
-                u = keyValue}, (error) => {
+                u = keyValue, console.log("user: " + u)}, (error) => {
                 console.log(error);
-                console.log("Internal Error");
-                //TODO: message, internal error
+                this.setState({userMessage: "Error retrieving user data, please try again."});
             });
             if (u != null) {
                 // user exists, hash password in form, compare the returned users hashed password
                 const userPass = decrypt(u.password);
+                console.log("User Password: " + u.password + " Hashed Password: " + userPass);
                 if(userPass == u.password){
                     //TODO: user logged in, navigate to bottom tab
                     console.log("Successfully logged in!");
