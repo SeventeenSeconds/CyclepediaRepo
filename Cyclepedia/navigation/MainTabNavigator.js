@@ -1,28 +1,67 @@
-import React from 'react';
-import { createStackNavigator, createBottomTabNavigator } from 'react-navigation';
+import React from "react";
+import {
+  createStackNavigator,
+  createBottomTabNavigator
+} from "react-navigation";
 
-import LoginScreen from '../screens/LoginScreen';
-import RegisterScreen from '../screens/RegisterScreen';
+import LoginScreen from "../screens/LoginScreen";
+import RegisterScreen from "../screens/RegisterScreen";
 
 const LoginStack = createStackNavigator({
-    Login: LoginScreen,
+  Login: LoginScreen
 });
 
 LoginStack.navigationOptions = {
-    tabBarLabel: 'Login',
+  // title: 'Login',
+  // headerStyle: {
+  //     backgroundColor: 'red'
+  // },
+  // headerTitleStyle: {
+  //     color: 'green'
+  // },
+  tabBarLabel: "Login",
+  tabFontSize: 40
+  //tabBar: {
+    //tabFontSize: 40,
+    //tabStyle: { backgroundColor: "red" }
+  //}
+  // appStyle: {
+  //     tabBarBackgroundColor: '#0f2362',
+  //     tabBarButtonColor: '#ffffff',
+  //     tabBarHideShadow: true,
+  //     tabBarSelectedButtonColor: '#63d7cc',
+  //     tabBarTranslucent: false,
+  //     tabFontSize: 40,
+  //     selectedTabFontSize: 12,
+  //   },
 };
 
 const RegisterStack = createStackNavigator({
-    Register: RegisterScreen,
+  Register: RegisterScreen
 });
 
 RegisterStack.navigationOptions = {
-    tabBarLabel: 'Register',
+  // title: 'Register',
+  // headerStyle: {
+  //     backgroundColor: 'red'
+  // },
+  // headerTitleStyle: {
+  //     color: 'green'
+  // },
+  tabBarLabel: "Register",
+  tabFontSize: 40
+  // appStyle: {
+  //     tabBarBackgroundColor: '#0f2362',
+  //     tabBarButtonColor: '#ffffff',
+  //     tabBarHideShadow: true,
+  //     tabBarSelectedButtonColor: '#63d7cc',
+  //     tabBarTranslucent: false,
+  //     tabFontSize: 40,
+  //     selectedTabFontSize: 12,
+  //   },
 };
 
 export default createBottomTabNavigator({
-    LoginStack,
-    RegisterStack,
+  LoginStack,
+  RegisterStack
 });
-
-

@@ -10,6 +10,7 @@ const StatsStack = createStackNavigator({
 
 StatsStack.navigationOptions = {
     tabBarLabel: 'Stats',
+    tabFontSize: 40
 };
 
 const RideStack = createStackNavigator({
@@ -18,6 +19,7 @@ const RideStack = createStackNavigator({
 
 RideStack.navigationOptions = {
     tabBarLabel: 'Ride',
+    tabFontSize: 40
 };
 
 export default createBottomTabNavigator({
