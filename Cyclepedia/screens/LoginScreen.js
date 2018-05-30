@@ -55,7 +55,7 @@ function comparePass(currentUser) {
 // }
 
 decrypt = passwrd => {
-    var bytes = crypto.AES.decrypt(ciphertext.toString(), 'secret key 123');
+    var bytes = crypto.AES.decrypt(passwrd.toString(), 'secret key 123');
     var plaintext = bytes.toString(crypto.enc.Utf8);
     return plaintext;
 }

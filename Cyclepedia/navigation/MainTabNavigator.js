@@ -1,8 +1,7 @@
 import React from "react";
-import {
-  createStackNavigator,
-  createBottomTabNavigator
-} from "react-navigation";
+import { createStackNavigator, createBottomTabNavigator } from 'react-navigation';
+import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
+//import colorStyles from './constants/colors';
 
 import LoginScreen from "../screens/LoginScreen";
 import RegisterScreen from "../screens/RegisterScreen";
@@ -12,28 +11,16 @@ const LoginStack = createStackNavigator({
 });
 
 LoginStack.navigationOptions = {
-  // title: 'Login',
-  // headerStyle: {
-  //     backgroundColor: 'red'
-  // },
-  // headerTitleStyle: {
-  //     color: 'green'
-  // },
   tabBarLabel: "Login",
-  tabFontSize: 40
-  //tabBar: {
-    //tabFontSize: 40,
-    //tabStyle: { backgroundColor: "red" }
-  //}
-  // appStyle: {
-  //     tabBarBackgroundColor: '#0f2362',
-  //     tabBarButtonColor: '#ffffff',
-  //     tabBarHideShadow: true,
-  //     tabBarSelectedButtonColor: '#63d7cc',
-  //     tabBarTranslucent: false,
-  //     tabFontSize: 40,
-  //     selectedTabFontSize: 12,
-  //   },
+  tabBarIcon: ({ focused, tintColor }) => {
+    <MaterialCommunityIcons name={`login`} size={25} color={tintColor} />;
+    },
+    tabBarOptions: {
+      activeTintColor: '#69A197',
+      inactiveTintColor: 'gray',
+      paddingBottom: 20,
+      fontSize: 100
+    },
 };
 
 const RegisterStack = createStackNavigator({
@@ -41,24 +28,16 @@ const RegisterStack = createStackNavigator({
 });
 
 RegisterStack.navigationOptions = {
-  // title: 'Register',
-  // headerStyle: {
-  //     backgroundColor: 'red'
-  // },
-  // headerTitleStyle: {
-  //     color: 'green'
-  // },
   tabBarLabel: "Register",
-  tabFontSize: 40
-  // appStyle: {
-  //     tabBarBackgroundColor: '#0f2362',
-  //     tabBarButtonColor: '#ffffff',
-  //     tabBarHideShadow: true,
-  //     tabBarSelectedButtonColor: '#63d7cc',
-  //     tabBarTranslucent: false,
-  //     tabFontSize: 40,
-  //     selectedTabFontSize: 12,
-  //   },
+  tabBarIcon: ({ focused, tintColor }) => {
+    <MaterialIcons name={`add-circle`} size={25} color={tintColor} />;
+    },
+    tabBarOptions: {
+      activeTintColor: '#69A197',
+      inactiveTintColor: 'gray',
+      paddingBottom: 20,
+      fontSize: 100
+    },
 };
 
 export default createBottomTabNavigator({
