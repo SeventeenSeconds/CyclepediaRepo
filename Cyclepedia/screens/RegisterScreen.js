@@ -122,9 +122,6 @@ export default class RegisterScreen extends React.Component {
         if (formData != null) {
             this.validate = this._form.getValue();
         }
-        // if (user.confirmPassword != null && user.confirmPassword != "") {
-        //     this.validate = this._form.getValue();
-        // }
     }
 
     async setUser(userData) {

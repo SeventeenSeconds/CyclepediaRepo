@@ -35,21 +35,17 @@ const options = {
     stylesheet: formStyles,
 };
 
-function comparePass(currentUser) {
-    return currentUser.password === currentUser.confirmPassword;
-}
-
-encrypt = passwrd => {
-
-    var ciphertext = crypto.AES.encrypt(passwrd, 'secret key 123');
-    console.log("encrypted text", ciphertext.toString());
-
-    var bytes = crypto.AES.decrypt(ciphertext.toString(), 'secret key 123');
-    // var plaintext = bytes.toString(crypto.enc.Utf8);
-    console.log("decrypted text " + bytes);
-
-    return ciphertext.toString();
-}
+// encrypt = passwrd => {
+//
+//     var ciphertext = crypto.AES.encrypt(passwrd, 'secret key 123');
+//     console.log("encrypted text", ciphertext.toString());
+//
+//     var bytes = crypto.AES.decrypt(ciphertext.toString(), 'secret key 123');
+//     // var plaintext = bytes.toString(crypto.enc.Utf8);
+//     console.log("decrypted text " + bytes);
+//
+//     return ciphertext.toString();
+// }
 
 decrypt = passwrd => {
     var bytes = crypto.AES.decrypt(passwrd, 'secret key 123');
@@ -87,7 +83,6 @@ export default class LoginScreen extends React.Component {
     async getUser(userData) {
         try {
             var u = null;
-            //TODO: try a second then for the validation, duh, just put the entire function in
             const value = await AsyncStorage.getItem(userData.email.toString()).then((keyValue) => {
                 u = keyValue
             }, (error) => {
@@ -149,10 +144,6 @@ export default class LoginScreen extends React.Component {
                 </View>
             </ScrollView>
         );
-    }
-
-    authenticatedUser = () => {
-        this.props.navigation.navigate('Bottom');
     }
 }
 
