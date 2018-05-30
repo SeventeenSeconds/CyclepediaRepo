@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, ScrollView, StyleSheet, AsyncStorage, Button, Text } from 'react-native';
+import {View, ScrollView, StyleSheet, AsyncStorage, Button, Text} from 'react-native';
 import colorStyles from '../constants/colors';
 import {AppLoading} from 'expo';
 
@@ -35,27 +35,20 @@ const options = {
     stylesheet: formStyles,
 };
 
-function comparePass(currentUser) {
-    return currentUser.password === currentUser.confirmPassword;
-}
-
 // encrypt = passwrd => {
-//     console.log("in encrypt");
-//
-//     var unencrypt = 'bacon';
 //
 //     var ciphertext = crypto.AES.encrypt(passwrd, 'secret key 123');
 //     console.log("encrypted text", ciphertext.toString());
 //
 //     var bytes = crypto.AES.decrypt(ciphertext.toString(), 'secret key 123');
-//     var plaintext = bytes.toString(crypto.enc.Utf8);
-//     console.log("decrypted text", plaintext);
+//     // var plaintext = bytes.toString(crypto.enc.Utf8);
+//     console.log("decrypted text " + bytes);
 //
 //     return ciphertext.toString();
 // }
 
 decrypt = passwrd => {
-    var bytes = crypto.AES.decrypt(ciphertext.toString(), 'secret key 123');
+    var bytes = crypto.AES.decrypt(passwrd, 'secret key 123');
     var plaintext = bytes.toString(crypto.enc.Utf8);
     return plaintext;
 }
@@ -83,59 +76,53 @@ export default class LoginScreen extends React.Component {
         title: 'Login',
     };
 
-    user = null;
-
     state = {
         userMessage: "",
     }
 
-    async getUser(userData){
+    async getUser(userData) {
         try {
             var u = null;
             const value = await AsyncStorage.getItem(userData.email.toString()).then((keyValue) => {
-                u = keyValue}, (error) => {
+                u = keyValue
+            }, (error) => {
                 console.log(error);
-                console.log("Internal Error");
-                //TODO: message, internal error
-            });
-            if (u != null) {
-                // user exists, hash password in form, compare the returned users hashed password
-                const userPass = decrypt(u.password);
-                if(userPass == u.password){
-                    //TODO: user logged in, navigate to bottom tab
-                    console.log("Successfully logged in!");
+                this.setState({userMessage: "Error retrieving user data, please try again."});
+            }).then(function(){
+                if (u != null) {
+                    // user exists, hash password in form, compare the returned users hashed password
+                    u = JSON.parse(u);
+                    const decryptedPassword = decrypt(u.password);
+                    if (decryptedPassword == userData.password) {
+                        console.log("Passwords matched");
+                        this.props.navigation.navigate("Bottom");
+                    } else {
+                        console.log("Incorrect Password");
+                        this.setState({userMessage: "Incorrect password, please try again."});
+                    }
                 } else {
-                    //TODO: wrong password, try again
-                    console.log("wrong password, try again");
+                    this.setState({userMessage: "User doesn't exists, please register."});
                 }
-            } else {
-                //TODO: User doesn't exist, please register
-                console.log("User doesn't exists, please register");
-            }
+            }.bind(this));
+
         } catch (error) {
-            console.log("Internal Error in catch");
-            //TODO: Set message
+            console.log("Error retrieving user data, please try again.");
+            console.log(error);
+            this.setState({userMessage: "Error retrieving user data, please try again."});
         }
     }
 
     handleLogin = () => {
         const userData = this._form.getValue();
-        console.log('userData: ', userData);
 
         if (userData != null) {
-            // console.log("in encrypt block");
-            // console.log('pass:', userData.password);
-            // const userPass = userData.password;
-            // test();
-            //
-            // var passHash;
-
-            // pulls user
-
             const user = this.getUser(userData);
 
-            // console.log(user);
-            // this.props.navigation.navigate('Bottom');
+            //TODO: Pass user in as props, convert to JSON obect
+            if (this.state.userLoggedIn) {
+                console.log("trying to log in");
+                this.props.navigation.navigate("Bottom");
+            }
         }
 
     }
@@ -157,10 +144,6 @@ export default class LoginScreen extends React.Component {
                 </View>
             </ScrollView>
         );
-    }
-
-    authenticatedUser = () => {
-        this.props.navigation.navigate('Bottom');
     }
 }
 
