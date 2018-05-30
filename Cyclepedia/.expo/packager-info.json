@@ -1,8 +1,8 @@
 {
-  "expoServerPort": null,
-  "packagerPort": null,
-  "packagerPid": null,
-  "expoServerNgrokUrl": null,
-  "packagerNgrokUrl": null,
-  "ngrokPid": null
+  "expoServerPort": 19000,
+  "packagerPort": 19001,
+  "packagerPid": 15580,
+  "expoServerNgrokUrl": "https://tu-y49.seventeenseconds.cyclepedia.exp.direct",
+  "packagerNgrokUrl": "https://packager.tu-y49.seventeenseconds.cyclepedia.exp.direct",
+  "ngrokPid": 8268
 }
