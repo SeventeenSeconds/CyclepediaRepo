@@ -55,17 +55,7 @@ const formStyles = {
 }
 
 encrypt = passwrd => {
-    console.log("in encrypt");
-
-    var unencrypt = 'bacon';
-
     var ciphertext = crypto.AES.encrypt(passwrd, 'secret key 123');
-    console.log("encrypted text", ciphertext.toString());
-
-    var bytes = crypto.AES.decrypt(ciphertext.toString(), 'secret key 123');
-    var plaintext = bytes.toString(crypto.enc.Utf8);
-    console.log("decrypted text", plaintext);
-
     return ciphertext.toString();
 }
 
@@ -78,7 +68,7 @@ export default class RegisterScreen extends React.Component {
         super(props);
         this.state = {
             user: {},
-            userMessage: "",
+            userCreated: false,
         };
 
         const passMatch = t.refinement(t.String, (s) => {
@@ -127,28 +117,31 @@ export default class RegisterScreen extends React.Component {
 
     onChange(user) {
         const formData = this._form.getValue();
+        //TODO: are we passing in a user? we're not setting the user to anything?
         this.setState({user});
         if (formData != null) {
             this.validate = this._form.getValue();
         }
     }
 
-    async getUser(userData){
+    async setUser(userData) {
         try {
             var u = null;
             const value = await AsyncStorage.getItem(userData.email.toString()).then((keyValue) => {
-                u = keyValue, console.log("user: " + u)}, (error) => {
+                u = keyValue
+            }, (error) => {
                 console.log(error);
                 this.setState({userMessage: "Error retrieving user data, please try again."});
-            });
-            if(u != null) {
-                this.setState({userMessage: "User already exists. Please login."});
-            } else {
-                AsyncStorage.setItem(userData.email.toString(), JSON.stringify(user));
-            }
+            }).then(function () {
+                if (u != null) {
+                    this.setState({userMessage: "User already exists. Please login."});
+                } else {
+                    AsyncStorage.setItem(userData.email.toString(), JSON.stringify(user));
+                    this.props.navigation.navigate("Bottom");
+                }
+            }.bind(this));
 
         } catch (error) {
-            console.log("Internal Error under try");
             console.log(error);
             this.setState({userMessage: "Error retrieving user data, please try again."});
         }
@@ -164,14 +157,12 @@ export default class RegisterScreen extends React.Component {
             const userPass = userData.password;
 
             var passHash = encrypt(userPass);
-
             console.log("pass hash ", passHash);
-            userData.password = passHash;
 
             //persist user from here
             user.email = userData.email;
             user.username = userData.username;
-            user.password = userData.password;
+            user.password = passHash;
             user.firstName = userData.firstName;
             user.contactEmail = userData.contactEmail;
             user.contactName = userData.contactName;
@@ -179,10 +170,10 @@ export default class RegisterScreen extends React.Component {
             console.log("user obj ", user);
 
             // checking that the user doesn't exist
-            var newUser = this.getUser(userData);
+            var newUser = this.setUser(userData);
 
-            //TODO: pass in newUser as props when navigating to stats page
-            this.props.navigation.navigate("Bottom");
+            //TODO: set user as JSON object, returned promise object cannot be used
+            //TODO: pass in newUser as props when navigating to stats page??
 
         }
     }
