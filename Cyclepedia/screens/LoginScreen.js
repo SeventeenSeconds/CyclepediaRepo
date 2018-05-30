@@ -80,71 +80,53 @@ export default class LoginScreen extends React.Component {
         title: 'Login',
     };
 
-    user = null;
-
     state = {
         userMessage: "",
-        userLoggedIn: false,
     }
 
     async getUser(userData) {
         try {
             var u = null;
+            //TODO: try a second then for the validation, duh, just put the entire function in
             const value = await AsyncStorage.getItem(userData.email.toString()).then((keyValue) => {
-                u = keyValue}, (error) => {
+                u = keyValue
+            }, (error) => {
                 console.log(error);
                 this.setState({userMessage: "Error retrieving user data, please try again."});
-            });
+            }).then(function(){
+                if (u != null) {
+                    // user exists, hash password in form, compare the returned users hashed password
+                    u = JSON.parse(u);
+                    const decryptedPassword = decrypt(u.password);
+                    if (decryptedPassword == userData.password) {
+                        console.log("Passwords matched");
+                        this.props.navigation.navigate("Bottom");
+                    } else {
+                        console.log("Incorrect Password");
+                        this.setState({userMessage: "Incorrect password, please try again."});
+                    }
+                } else {
+                    this.setState({userMessage: "User doesn't exists, please register."});
+                }
+            }.bind(this));
 
-            if (u != null) {
-                // user exists, hash password in form, compare the returned users hashed password
-                console.log("validating password")
-                this.validatePassword(u, userData.password);
-            } else {
-                //TODO: User doesn't exist, please register
-                console.log("User doesn't exists, please register");
-            }
         } catch (error) {
             console.log("Error retrieving user data, please try again.");
             console.log(error);
-            //TODO: Set message
-        }
-    }
-
-    validatePassword(userPromise, userPassword) {
-        userPromise = JSON.parse(userPromise);
-        const decryptedPassword = decrypt(userPromise.password);
-        console.log("Decrypted " + decryptedPassword + " userpass " + userPassword);
-        if (decryptedPassword == userPassword ) {
-            //TODO: user logged in, navigate to bottom tab
-            console.log("Successfully logged in!");
-            // this.setState({userCreated: true});
-        } else {
-            //TODO: wrong password, try again
-            console.log("wrong password, try again");
-
+            this.setState({userMessage: "Error retrieving user data, please try again."});
         }
     }
 
     handleLogin = () => {
         const userData = this._form.getValue();
-        console.log('userData: ', userData);
 
         if (userData != null) {
-            // console.log("in encrypt block");
-            // console.log('pass:', userData.password);
-            // const userPass = userData.password;
-            // test();
-            //
-            // var passHash;
-
-            // pulls user
-
             const user = this.getUser(userData);
 
-            // console.log(user);
+            //TODO: Pass user in as props, convert to JSON obect
             if (this.state.userLoggedIn) {
-                this.props.navigation.navigate('Bottom');
+                console.log("trying to log in");
+                this.props.navigation.navigate("Bottom");
             }
         }
 
