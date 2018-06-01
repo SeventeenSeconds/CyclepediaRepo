@@ -2,11 +2,7 @@ import React, { Component } from 'react';
 import { Text, View, StyleSheet } from 'react-native';
 import { Constants, Location, Permissions, MapView } from 'expo';
 
-const GEOLOCATION_OPTIONS = {
-  enableHighAccuracy: true,
-  timeout: 20000,
-  maximumAge: 1000
-};
+const GEOLOCATION_OPTIONS = { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 };
 
 var isPaused = false;
 var isEndRide = false;
@@ -16,6 +12,7 @@ let startCoords = {
   longitude: null,
   latitudeDelta: 0.1,
   longitudeDelta: 0.05,
+  speed: null
 }
 
 let pauseCoords = {
@@ -23,6 +20,7 @@ let pauseCoords = {
   longitude: null,
   latitudeDelta: 0.1,
   longitudeDelta: 0.05,
+  speed: null,
 }
 
 let endCoords = {
@@ -30,6 +28,11 @@ let endCoords = {
   longitude: null,
   latitudeDelta: 0.1,
   longitudeDelta: 0.05,
+  speed: null
+}
+
+function resumeClick() {
+  isPaused = false;
 }
 
 export default class App extends Component {
@@ -37,89 +40,79 @@ export default class App extends Component {
     locationResult: null,
     longitude: null,
     latitude: null,
-    location: {
-      coords: {
-        latitude: 0,
-        longitude: 0
-      }
-    },
+    location: { coords: {latitude: 0, longitude: 0}},
   };
 
   componentDidMount() {
     this._getLocationAsync();
   }
-
+  
   componentWillMount() {
     Location.watchPositionAsync(GEOLOCATION_OPTIONS, this.locationChanged);
   }
-
+  
   locationChanged = (location) => {
     //these will be set on button click
     if (isPaused == true) {
       pauseCoords.latitude = location.coords.latitude;
       pauseCoords.longitude = location.coords.longitude;
+      pauseCoords.speed = location.coords.speed;
     }
     if (isEndRide == true) {
       endCoords.latitude = location.coords.latitude;
       endCoords.longitude = location.coords.longitude;
+      endCoords.speed = location.coords.speed;
+      this.calculateDistance(startCoords.latitude, endCoords.latitude, startCoords.longitude, startCoords.latitude);
     }
-
+    
     startCoords.latitude = location.coords.latitude;
     startCoords.longitude = location.coords.latitude;
-
+    startCoords.speed = location.coords.speed;
+    //persist speed
+    
     region = {
-        latitude: location.coords.latitude,
-        longitude: location.coords.longitude,
-        latitudeDelta: 0.1,
-        longitudeDelta: 0.05,
-      },
-      this.setState({
-        location,
-        region
-      })
+      latitude: location.coords.latitude,
+      longitude: location.coords.longitude,
+      latitudeDelta: 0.1,
+      longitudeDelta: 0.05,
+    },
+    this.setState({location, region})
   }
-
+  
   calculateDistance = (lat1, lat2, lon1, lon2) => {
     var R = 6371e3;
     var lat1Rad = lat1.toRadians();
     var lat2Rad = lat2.toRadians();
-    var distLatRad = (lat2 - lat1).toRadians();
-    var distLonRad = (lon2 - lon1).toRadians();
-
-    var a = Math.sin((lat1Rad / 2)) * (Math.sin(distLatRad / 2)) +
-      Math.cos(lat1Rad) * Math.cos(lat2Rad) *
-      Math.sin(distLatRad / 2) * Math.sin(distLonRad / 2);
-    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
+    var distLatRad = (lat2-lat1).toRadians();
+    var distLonRad = (lon2-lon1).toRadians();
+    
+    var a = Math.sin((lat1Rad/2)) * (Math.sin(distLatRad/2)) +
+            Math.cos(lat1Rad) * Math.cos(lat2Rad) *
+            Math.sin(distLatRad/2) * Math.sin(distLonRad/2);
+    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    
     var d = R * c;
     console.log("distance", d);
+    //persist d as distance for ride
   }
-
+  
   _getLocationAsync = async () => {
-    let {
-      status
-    } = await Permissions.askAsync(Permissions.LOCATION);
-    if (status !== 'granted') {
-      this.setState({
-        locationResult: 'Permission to access location was denied',
-      });
-    }
-
-    let locationResult = await Location.getCurrentPositionAsync({
-      enableHighAccuracy: true,
-    });
-
-    this.setState({
-      locationResult
-    });
-    let latitude = locationResult.coords.latitude;
-    this.setState({
-      latitude
-    });
-    let longitude = locationResult.coords.longitude;
-    this.setState({
-      longitude
-    });
+    let { status } = await Permissions.askAsync(Permissions.LOCATION);
+   if (status !== 'granted') {
+     this.setState({
+       locationResult: 'Permission to access location was denied',
+     });
+   }
+   
+   let locationResult = await Location.getCurrentPositionAsync({
+     enableHighAccuracy: true,
+   });
+   
+  this.setState({ locationResult });
+   let latitude = locationResult.coords.latitude;
+   this.setState({ latitude });
+   let longitude = locationResult.coords.longitude;
+   this.setState({ longitude });
   }
 
   render() {
