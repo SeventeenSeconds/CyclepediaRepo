@@ -3,16 +3,27 @@ import { Text, View, StyleSheet } from 'react-native';
 import { Constants, Location, Permissions, MapView } from 'expo';
 
 const GEOLOCATION_OPTIONS = { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 };
+// var date = new Date();
+// const TIMESTAMP = date.toDateString();
 
+var speeds = [];
 var isPaused = false;
 var isEndRide = false;
+
+let ride = {
+  id: null,
+  speed: null,
+  distance: null,
+  time: null,
+}
 
 let startCoords = {
   latitude: null,
   longitude: null,
   latitudeDelta: 0.1,
   longitudeDelta: 0.05,
-  speed: null
+  speed: null,
+  timestamp: null
 }
 
 let pauseCoords = {
@@ -21,6 +32,7 @@ let pauseCoords = {
   latitudeDelta: 0.1,
   longitudeDelta: 0.05,
   speed: null,
+  timestamp: null
 }
 
 let endCoords = {
@@ -28,7 +40,8 @@ let endCoords = {
   longitude: null,
   latitudeDelta: 0.1,
   longitudeDelta: 0.05,
-  speed: null
+  speed: null,
+  timestamp: null
 }
 
 function resumeClick() {
@@ -57,18 +70,22 @@ export default class App extends Component {
       pauseCoords.latitude = location.coords.latitude;
       pauseCoords.longitude = location.coords.longitude;
       pauseCoords.speed = location.coords.speed;
+      speeds.push(location.coords.speed);
+      pauseCoords.timestamp = location.timestamp;
     }
     if (isEndRide == true) {
       endCoords.latitude = location.coords.latitude;
       endCoords.longitude = location.coords.longitude;
       endCoords.speed = location.coords.speed;
-      this.calculateDistance(startCoords.latitude, endCoords.latitude, startCoords.longitude, startCoords.latitude);
+      speeds.push(location.coords.speed);
+      endCoords.timestamp = location.timestamp;
+      var distance = this.calculateDistance(startCoords.latitude, endCoords.latitude, startCoords.longitude, startCoords.latitude);
+      var time = this.calculateTime(startCoords.timestamp, endCoords.timestamp);
+      var avSpeed = this.calculateAverageSpeed();
+      this.createRide(distance, time, avSpeed);
     }
     
-    startCoords.latitude = location.coords.latitude;
-    startCoords.longitude = location.coords.latitude;
-    startCoords.speed = location.coords.speed;
-    //persist speed
+    speeds.push(location.coords.speed);
     
     region = {
       latitude: location.coords.latitude,
@@ -80,6 +97,10 @@ export default class App extends Component {
   }
   
   calculateDistance = (lat1, lat2, lon1, lon2) => {
+    lat1 = parseFloat(lat1);
+    lat2 = parseFloat(lat2);
+    lon1 = parseFloat(lon1);
+    lon2 = parseFloat(lon2);
     var R = 6371e3;
     var lat1Rad = lat1.toRadians();
     var lat2Rad = lat2.toRadians();
@@ -94,6 +115,40 @@ export default class App extends Component {
     var d = R * c;
     console.log("distance", d);
     //persist d as distance for ride
+    return d;
+  }
+  
+  calculateTime = (startTime, endTime) => {
+    startTime = parseFloat(startTime);
+    endTime = parseFloat(endTime);
+    var tripTime = endTime - startTime;
+    console.log("trip length", tripTime);
+    var tripAsDate = new Date(tripTime);
+    console.log("trip readable", tripAsDate);
+    return tripTime;
+  }
+  
+  calculateAverageSpeed = () => {
+    const arrAvg = speeds => speeds.reduce((a,b) => a + b, 0) / speeds.length;
+    return arrAvg;
+  }
+  
+  createRide = (distance, time, speed) => {
+    //id will need to be based off of past rides?
+    ride.id = 1;
+    ride.distance = distance;
+    ride.time = time;
+    ride.speed = speed;
+    this.saveRide();
+  }
+  
+  saveRide = () => {
+    //persist ride
+    //u.rides.push(ride);
+  }
+  
+  beginRide = () => {
+    
   }
   
   _getLocationAsync = async () => {
@@ -108,11 +163,25 @@ export default class App extends Component {
      enableHighAccuracy: true,
    });
    
+    startCoords.latitude = locationResult.coords.latitude;
+    startCoords.longitude = locationResult.coords.latitude;
+    startCoords.speed = locationResult.coords.speed;
+    //persist speed
+    startCoords.timestamp = locationResult.timestamp;
+    //persist time
+   
   this.setState({ locationResult });
    let latitude = locationResult.coords.latitude;
    this.setState({ latitude });
    let longitude = locationResult.coords.longitude;
    this.setState({ longitude });
+
+  //   let locationObj = null;
+  //   let locationStateArray = [];
+  //   let location = await Location.getCurrentPositionAsync({}).then(function() {
+  //   locationObj = JSON.parse(location);
+  //   this.setState({ locationResult: "hello" });
+  // }.bind(this));
   }
 
   render() {
@@ -159,7 +228,10 @@ export default class App extends Component {
           description={'I am here'}
         />
         </MapView>
-        
+        <Button
+        title="Start Ride"
+        onPress={this.beginRide}
+        />
       </View>
     );
   }
