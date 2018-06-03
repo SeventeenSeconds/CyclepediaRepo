@@ -1,8 +1,12 @@
 import React, { Component } from 'react';
-import { Text, View, StyleSheet } from 'react-native';
+import { Text, View, StyleSheet, Button } from 'react-native';
 import { Constants, Location, Permissions, MapView } from 'expo';
 
-const GEOLOCATION_OPTIONS = { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 };
+const GEOLOCATION_OPTIONS = {
+  enableHighAccuracy: true,
+  timeout: 20000,
+  maximumAge: 1000
+};
 // var date = new Date();
 // const TIMESTAMP = date.toDateString();
 
@@ -53,17 +57,26 @@ export default class App extends Component {
     locationResult: null,
     longitude: null,
     latitude: null,
-    location: { coords: {latitude: 0, longitude: 0}},
+    location: {
+      coords: {
+        latitude: 0,
+        longitude: 0
+      }
+    },
+    startBtnStatus: true,
+    pauseBtnStatus: false,
+    resumeBtnStatus: false,
+    endBtnStatus: false,
   };
 
   componentDidMount() {
     this._getLocationAsync();
   }
-  
+
   componentWillMount() {
     Location.watchPositionAsync(GEOLOCATION_OPTIONS, this.locationChanged);
   }
-  
+
   locationChanged = (location) => {
     //these will be set on button click
     if (isPaused == true) {
@@ -84,18 +97,21 @@ export default class App extends Component {
       var avSpeed = this.calculateAverageSpeed();
       this.createRide(distance, time, avSpeed);
     }
-    
+
     speeds.push(location.coords.speed);
-    
+
     region = {
-      latitude: location.coords.latitude,
-      longitude: location.coords.longitude,
-      latitudeDelta: 0.1,
-      longitudeDelta: 0.05,
-    },
-    this.setState({location, region})
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+        latitudeDelta: 0.1,
+        longitudeDelta: 0.05,
+      },
+      this.setState({
+        location,
+        region
+      })
   }
-  
+
   calculateDistance = (lat1, lat2, lon1, lon2) => {
     lat1 = parseFloat(lat1);
     lat2 = parseFloat(lat2);
@@ -104,20 +120,20 @@ export default class App extends Component {
     var R = 6371e3;
     var lat1Rad = lat1.toRadians();
     var lat2Rad = lat2.toRadians();
-    var distLatRad = (lat2-lat1).toRadians();
-    var distLonRad = (lon2-lon1).toRadians();
-    
-    var a = Math.sin((lat1Rad/2)) * (Math.sin(distLatRad/2)) +
-            Math.cos(lat1Rad) * Math.cos(lat2Rad) *
-            Math.sin(distLatRad/2) * Math.sin(distLonRad/2);
-    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-    
+    var distLatRad = (lat2 - lat1).toRadians();
+    var distLonRad = (lon2 - lon1).toRadians();
+
+    var a = Math.sin((lat1Rad / 2)) * (Math.sin(distLatRad / 2)) +
+      Math.cos(lat1Rad) * Math.cos(lat2Rad) *
+      Math.sin(distLatRad / 2) * Math.sin(distLonRad / 2);
+    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
     var d = R * c;
     console.log("distance", d);
     //persist d as distance for ride
     return d;
   }
-  
+
   calculateTime = (startTime, endTime) => {
     startTime = parseFloat(startTime);
     endTime = parseFloat(endTime);
@@ -127,12 +143,12 @@ export default class App extends Component {
     console.log("trip readable", tripAsDate);
     return tripTime;
   }
-  
+
   calculateAverageSpeed = () => {
-    const arrAvg = speeds => speeds.reduce((a,b) => a + b, 0) / speeds.length;
+    const arrAvg = speeds => speeds.reduce((a, b) => a + b, 0) / speeds.length;
     return arrAvg;
   }
-  
+
   createRide = (distance, time, speed) => {
     //id will need to be based off of past rides?
     ride.id = 1;
@@ -141,47 +157,81 @@ export default class App extends Component {
     ride.speed = speed;
     this.saveRide();
   }
-  
+
   saveRide = () => {
     //persist ride
     //u.rides.push(ride);
   }
-  
+
   beginRide = () => {
-    
+    this.setState({ startBtnStatus: false });
+    this.setState({ pauseBtnStatus: true });
+    this.setState({ endBtnStatus: true });
   }
   
+  pauseRide = () => {
+    this.setState({ startBtnStatus: false });
+    this.setState({ pauseBtnStatus: false });
+    this.setState({ resumeBtnStatus: true });
+    this.setState({ endBtnStatus: true });
+    isPaused = true;
+  }
+  
+  resumeRide = () => {
+    this.setState({ startBtnStatus: false });
+    this.setState({ pauseBtnStatus: true });
+    this.setState({ resumeBtnStatus: false });
+    this.setState({ endBtnStatus: true });
+  }
+  
+  endRide = () => {
+    this.setState({ startBtnStatus: true });
+    this.setState({ pauseBtnStatus: false });
+    this.setState({ endBtnStatus: false });
+    isEndRide = true;
+  }
+
+
+
   _getLocationAsync = async () => {
-    let { status } = await Permissions.askAsync(Permissions.LOCATION);
-   if (status !== 'granted') {
-     this.setState({
-       locationResult: 'Permission to access location was denied',
-     });
-   }
-   
-   let locationResult = await Location.getCurrentPositionAsync({
-     enableHighAccuracy: true,
-   });
-   
+    let {
+      status
+    } = await Permissions.askAsync(Permissions.LOCATION);
+    if (status !== 'granted') {
+      this.setState({
+        locationResult: 'Permission to access location was denied',
+      });
+    }
+
+    let locationResult = await Location.getCurrentPositionAsync({
+      enableHighAccuracy: true,
+    });
+
     startCoords.latitude = locationResult.coords.latitude;
     startCoords.longitude = locationResult.coords.latitude;
     startCoords.speed = locationResult.coords.speed;
     //persist speed
     startCoords.timestamp = locationResult.timestamp;
     //persist time
-   
-  this.setState({ locationResult });
-   let latitude = locationResult.coords.latitude;
-   this.setState({ latitude });
-   let longitude = locationResult.coords.longitude;
-   this.setState({ longitude });
 
-  //   let locationObj = null;
-  //   let locationStateArray = [];
-  //   let location = await Location.getCurrentPositionAsync({}).then(function() {
-  //   locationObj = JSON.parse(location);
-  //   this.setState({ locationResult: "hello" });
-  // }.bind(this));
+    this.setState({
+      locationResult
+    });
+    let latitude = locationResult.coords.latitude;
+    this.setState({
+      latitude
+    });
+    let longitude = locationResult.coords.longitude;
+    this.setState({
+      longitude
+    });
+
+    //   let locationObj = null;
+    //   let locationStateArray = [];
+    //   let location = await Location.getCurrentPositionAsync({}).then(function() {
+    //   locationObj = JSON.parse(location);
+    //   this.setState({ locationResult: "hello" });
+    // }.bind(this));
   }
 
   render() {
@@ -228,10 +278,20 @@ export default class App extends Component {
           description={'I am here'}
         />
         </MapView>
-        <Button
-        title="Start Ride"
-        onPress={this.beginRide}
-        />
+        <View style={styles.buttonView}>
+        {
+          this.state.pauseBtnStatus ? <View style={styles.buttonContainer}> <Button style={styles.button} title="Pause Ride" onPress={this.pauseRide} /> </View> : null
+        }
+        {
+          this.state.resumeBtnStatus ? <View style={styles.buttonContainer}> <Button style={styles.button} title="Resume Ride" onPress={this.resumeRide} /> </View> : null
+        }
+        {
+          this.state.endBtnStatus ? <View style={styles.buttonContainer}> <Button style={styles.button} title="End Ride" onPress={this.endRide} /> </View> : null
+        }
+        {
+          this.state.startBtnStatus ? <View style={styles.buttonContainer}> <Button style={styles.button} title="Start Ride" onPress={this.beginRide} /> </View> : null
+        }
+        </View>
       </View>
     );
   }
@@ -245,4 +305,19 @@ const styles = StyleSheet.create({
     paddingTop: Constants.statusBarHeight,
     backgroundColor: '#ecf0f1',
   },
+  buttonView: {
+    display: 'flex',
+    flex: 1,
+    flexDirection: 'row',
+    marginTop: 5
+  },
+  button: {
+    width: 'max-content',
+    height: 'max-content'
+  },
+  buttonContainer: {
+    flex: 1,
+    height: 100,
+    width: 120
+  }
 });
