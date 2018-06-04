@@ -15,7 +15,6 @@ var isPaused = false;
 var isEndRide = false;
 
 let ride = {
-  id: null,
   speed: null,
   distance: null,
   time: null,
@@ -151,7 +150,6 @@ export default class App extends Component {
 
   createRide = (distance, time, speed) => {
     //id will need to be based off of past rides?
-    ride.id = 1;
     ride.distance = distance;
     ride.time = time;
     ride.speed = speed;
@@ -159,7 +157,7 @@ export default class App extends Component {
   }
 
   saveRide = () => {
-    //persist ride
+    //TODO: persist
     //u.rides.push(ride);
   }
 
@@ -182,11 +180,13 @@ export default class App extends Component {
     this.setState({ pauseBtnStatus: true });
     this.setState({ resumeBtnStatus: false });
     this.setState({ endBtnStatus: true });
+    isPaused = false;
   }
   
   endRide = () => {
     this.setState({ startBtnStatus: true });
     this.setState({ pauseBtnStatus: false });
+    this.setState({ resumeBtnStatus: false });
     this.setState({ endBtnStatus: false });
     isEndRide = true;
   }
@@ -225,13 +225,6 @@ export default class App extends Component {
     this.setState({
       longitude
     });
-
-    //   let locationObj = null;
-    //   let locationStateArray = [];
-    //   let location = await Location.getCurrentPositionAsync({}).then(function() {
-    //   locationObj = JSON.parse(location);
-    //   this.setState({ locationResult: "hello" });
-    // }.bind(this));
   }
 
   render() {
