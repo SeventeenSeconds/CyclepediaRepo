@@ -9,10 +9,10 @@ const AppNavigator = createSwitchNavigator(
     {
         Main: MainTabNavigator,
         Bottom: BottomTabNavigator,
-        Top: TopTabNavigator
+        // Top: TopTabNavigator
     },
     {
-        initialRouteName: 'Main',
+        initialRouteName: 'Bottom',
     }
 );
 
