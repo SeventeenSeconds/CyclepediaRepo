@@ -1,19 +1,18 @@
 import React from 'react';
 import { View, ScrollView, StyleSheet, Button } from 'react-native';
 import colorStyles from '../constants/colors';
+import EmergencyIcon from '../constants/EmergencyIcon';
 
 export default class LandingScreen extends React.Component {
     static navigationOptions = {
-        title: 'Your Info',
+        title: 'Settings',
+        headerRight: <EmergencyIcon />,
     };
     
     render() {
       return (
           <ScrollView>
               <View style={styles.container}>
-                  <Button
-                      title="Hello"
-                  />
               </View>
           </ScrollView>
       );

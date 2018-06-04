@@ -15,7 +15,9 @@
     "react": "16.3.1",
     "react-native": "https://github.com/expo/react-native/archive/sdk-27.0.0.tar.gz",
     "react-native-bcrypt": "^2.4.0",
+    "react-native-dialog-component": "^0.2.17",
     "react-native-maps": "^0.21.0",
+    "react-native-popup-dialog": "^0.11.46",
     "react-native-tabbar-bottom": "^1.0.4",
     "react-navigation": "^2.0.1",
     "tcomb-form-native": "^0.6.12"

@@ -121,7 +121,7 @@ export default class LoginScreen extends React.Component {
             //TODO: Pass user in as props, convert to JSON obect
             if (this.state.userLoggedIn) {
                 console.log("trying to log in");
-                this.props.navigation.navigate("Bottom");
+                this.props.navigation.navigate("Bottom", {user: JSON.parse(user)});
             }
         }
 
