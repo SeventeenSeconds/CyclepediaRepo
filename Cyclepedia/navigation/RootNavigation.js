@@ -12,7 +12,7 @@ const AppNavigator = createSwitchNavigator(
         // Top: TopTabNavigator
     },
     {
-        initialRouteName: 'Bottom',
+        initialRouteName: 'Main',
     }
 );
 
