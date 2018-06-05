@@ -59,6 +59,8 @@ const formStyles = {
     }
 }
 
+export var UserObject = '';
+
 export default class LoginScreen extends React.Component {
     static navigationOptions = {
         title: 'Login',
@@ -76,11 +78,12 @@ export default class LoginScreen extends React.Component {
             }, (error) => {
                 console.log(error);
                 this.setState({userMessage: "Error retrieving user data, please try again."});
-            }).then(function(){
+            }).then(function () {
                 if (u != null) {
                     // user exists, hash password in form, compare the returned users hashed password
                     u = JSON.parse(u);
                     const decryptedPassword = decrypt(u.password);
+                    UserObject = u;
                     if (decryptedPassword == userData.password) {
                         console.log("Passwords matched");
                         this.props.navigation.navigate("Bottom");
@@ -104,13 +107,7 @@ export default class LoginScreen extends React.Component {
         const userData = this._form.getValue();
 
         if (userData != null) {
-            const user = this.getUser(userData);
-
-            //TODO: Pass user in as props, convert to JSON obect
-            if (this.state.userLoggedIn) {
-                console.log("trying to log in");
-                this.props.navigation.navigate("Bottom", {user: JSON.parse(user)});
-            }
+            var user = this.getUser(userData);
         }
 
     }

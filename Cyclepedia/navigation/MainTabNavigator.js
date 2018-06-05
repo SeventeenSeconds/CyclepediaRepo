@@ -1,8 +1,6 @@
 import React from "react";
 import { createStackNavigator, createBottomTabNavigator } from 'react-navigation';
 import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
-//import colorStyles from './constants/colors';
-
 import LoginScreen from "../screens/LoginScreen";
 import RegisterScreen from "../screens/RegisterScreen";
 
