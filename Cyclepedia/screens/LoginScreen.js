@@ -36,7 +36,7 @@ const options = {
 };
 
 decrypt = passwrd => {
-    var bytes = crypto.AES.decrypt(passwrd, 'secret key 123');
+    var bytes = crypto.AES.decrypt(passwrd.toString(), 'secret key 123');
     var plaintext = bytes.toString(crypto.enc.Utf8);
     return plaintext;
 }
@@ -109,7 +109,7 @@ export default class LoginScreen extends React.Component {
             //TODO: Pass user in as props, convert to JSON obect
             if (this.state.userLoggedIn) {
                 console.log("trying to log in");
-                this.props.navigation.navigate("Bottom");
+                this.props.navigation.navigate("Bottom", {user: JSON.parse(user)});
             }
         }
 
@@ -137,9 +137,11 @@ export default class LoginScreen extends React.Component {
 
 const styles = StyleSheet.create({
     container: {
+        display: 'flex',
         flex: 1,
-        paddingTop: 15,
-        backgroundColor: '#fff',
+        justifyContent: 'center',
+        padding: 20,
+        backgroundColor: colorStyles.white,
     },
     error: {
         color: "red",

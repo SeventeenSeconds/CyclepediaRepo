@@ -4,6 +4,7 @@ import { StyleSheet, Text, View, Image, ScrollView  } from 'react-native';
 import { AppLoading, Font } from 'expo';
 import colorStyles from './constants/colors';
 import RootNavigation from './navigation/RootNavigation';
+import TopTabNavigator from './navigation/TopTabNavigator';
 
 export default class App extends React.Component {
   state = {

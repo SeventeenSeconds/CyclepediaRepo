@@ -1,202 +1,316 @@
-// import React from 'react';
-// import {
-//   Platform,
-//   View,
-//   StyleSheet,
-//   TouchableOpacity,
-//   ScrollView,
-//   Text,
-//   Switch,
-// } from 'react-native';
-// import { PROVIDER_GOOGLE, PROVIDER_DEFAULT } from 'react-native-maps';
-// import DisplayLatLng from './examples/DisplayLatLng';
-// import ViewsAsMarkers from './examples/ViewsAsMarkers';
-// import EventListener from './examples/EventListener';
-// import MarkerTypes from './examples/MarkerTypes';
-// import DraggableMarkers from './examples/DraggableMarkers';
-// import PolygonCreator from './examples/PolygonCreator';
-// import PolylineCreator from './examples/PolylineCreator';
-// import GradientPolylines from './examples/GradientPolylines';
-// import AnimatedViews from './examples/AnimatedViews';
-// import AnimatedMarkers from './examples/AnimatedMarkers';
-// import Callouts from './examples/Callouts';
-// import Overlays from './examples/Overlays';
-// import DefaultMarkers from './examples/DefaultMarkers';
-// import CustomMarkers from './examples/CustomMarkers';
-// import CachedMap from './examples/CachedMap';
-// import LoadingMap from './examples/LoadingMap';
-// import TakeSnapshot from './examples/TakeSnapshot';
-// import FitToSuppliedMarkers from './examples/FitToSuppliedMarkers';
-// import FitToCoordinates from './examples/FitToCoordinates';
-// import LiteMapView from './examples/LiteMapView';
-// import CustomTiles from './examples/CustomTiles';
-// import ZIndexMarkers from './examples/ZIndexMarkers';
-// import StaticMap from './examples/StaticMap';
-// import MapStyle from './examples/MapStyle';
-// import LegalLabel from './examples/LegalLabel';
-// import SetNativePropsOverlays from './examples/SetNativePropsOverlays';
-// import CustomOverlay from './examples/CustomOverlay';
-// import MapKml from './examples/MapKml';
-// import BugMarkerWontUpdate from './examples/BugMarkerWontUpdate';
-// import ImageOverlayWithAssets from './examples/ImageOverlayWithAssets';
-// import ImageOverlayWithURL from './examples/ImageOverlayWithURL';
-// import OnPoiClick from './examples/OnPoiClick';
+import React, { Component } from 'react';
+import { Text, View, StyleSheet, Button } from 'react-native';
+import { Constants, Location, Permissions, MapView } from 'expo';
 
-// const IOS = Platform.OS === 'ios';
-// const ANDROID = Platform.OS === 'android';
+const GEOLOCATION_OPTIONS = {
+  enableHighAccuracy: true,
+  timeout: 20000,
+  maximumAge: 1000
+};
+// var date = new Date();
+// const TIMESTAMP = date.toDateString();
 
-// function makeExampleMapper(useGoogleMaps) {
-//   if (useGoogleMaps) {
-//     return example => [
-//       example[0],
-//       [example[1], example[3]].filter(Boolean).join(' '),
-//     ];
-//   }
-//   return example => example;
-// }
+var speeds = [];
+var isPaused = false;
+var isEndRide = false;
 
-// class MapTest extends React.Component {
-//   constructor(props) {
-//     super(props);
+let ride = {
+  speed: null,
+  distance: null,
+  time: null,
+}
 
-//     this.state = {
-//       Component: null,
-//       useGoogleMaps: ANDROID,
-//     };
-//   }
+let startCoords = {
+  latitude: null,
+  longitude: null,
+  latitudeDelta: 0.1,
+  longitudeDelta: 0.05,
+  speed: null,
+  timestamp: null
+}
 
-//   renderExample([Component, title]) {
-//     return (
-//       <TouchableOpacity
-//         key={title}
-//         style={styles.button}
-//         onPress={() => this.setState({ Component })}
-//       >
-//         <Text>{title}</Text>
-//       </TouchableOpacity>
-//     );
-//   }
+let pauseCoords = {
+  latitude: null,
+  longitude: null,
+  latitudeDelta: 0.1,
+  longitudeDelta: 0.05,
+  speed: null,
+  timestamp: null
+}
 
-//   renderBackButton() {
-//     return (
-//       <TouchableOpacity
-//         style={styles.back}
-//         onPress={() => this.setState({ Component: null })}
-//       >
-//         <Text style={{ fontWeight: 'bold', fontSize: 30 }}>&larr;</Text>
-//       </TouchableOpacity>
-//     );
-//   }
+let endCoords = {
+  latitude: null,
+  longitude: null,
+  latitudeDelta: 0.1,
+  longitudeDelta: 0.05,
+  speed: null,
+  timestamp: null
+}
 
-//   renderGoogleSwitch() {
-//     return (
-//       <View>
-//         <Text>Use GoogleMaps?</Text>
-//         <Switch
-//           onValueChange={(value) => this.setState({ useGoogleMaps: value })}
-//           style={{ marginBottom: 10 }}
-//           value={this.state.useGoogleMaps}
-//         />
-//       </View>
-//     );
-//   }
+function resumeClick() {
+  isPaused = false;
+}
 
-//   renderExamples(examples) {
-//     const {
-//       Component,
-//       useGoogleMaps,
-//     } = this.state;
+export default class App extends Component {
+  state = {
+    locationResult: null,
+    longitude: null,
+    latitude: null,
+    location: {
+      coords: {
+        latitude: 0,
+        longitude: 0
+      }
+    },
+    startBtnStatus: true,
+    pauseBtnStatus: false,
+    resumeBtnStatus: false,
+    endBtnStatus: false,
+  };
 
-//     return (
-//       <View style={styles.container}>
-//         {Component && <Component provider={useGoogleMaps ? PROVIDER_GOOGLE : PROVIDER_DEFAULT} />}
-//         {Component && this.renderBackButton()}
-//         {!Component &&
-//           <ScrollView
-//             style={StyleSheet.absoluteFill}
-//             contentContainerStyle={styles.scrollview}
-//             showsVerticalScrollIndicator={false}
-//           >
-//             {IOS && this.renderGoogleSwitch()}
-//             {examples.map(example => this.renderExample(example))}
-//           </ScrollView>
-//         }
-//       </View>
-//     );
-//   }
+  componentDidMount() {
+    this._getLocationAsync();
+  }
 
-//   render() {
-//     return this.renderExamples([
-//       // [<component>, <component description>, <Google compatible>, <Google add'l description>]
-//       [StaticMap, 'StaticMap', true],
-//       [DisplayLatLng, 'Tracking Position', true, '(incomplete)'],
-//       [ViewsAsMarkers, 'Arbitrary Views as Markers', true],
-//       [EventListener, 'Events', true, '(incomplete)'],
-//       [MarkerTypes, 'Image Based Markers', true],
-//       [DraggableMarkers, 'Draggable Markers', true],
-//       [PolygonCreator, 'Polygon Creator', true],
-//       [PolylineCreator, 'Polyline Creator', true],
-//       [GradientPolylines, 'Gradient Polylines', true],
-//       [AnimatedViews, 'Animating with MapViews'],
-//       [AnimatedMarkers, 'Animated Marker Position'],
-//       [Callouts, 'Custom Callouts', true],
-//       [Overlays, 'Circles, Polygons, and Polylines', true],
-//       [DefaultMarkers, 'Default Markers', true],
-//       [CustomMarkers, 'Custom Markers', true],
-//       [TakeSnapshot, 'Take Snapshot', true, '(incomplete)'],
-//       [CachedMap, 'Cached Map'],
-//       [LoadingMap, 'Map with loading'],
-//       [FitToSuppliedMarkers, 'Focus Map On Markers', true],
-//       [FitToCoordinates, 'Fit Map To Coordinates', true],
-//       [LiteMapView, 'Android Lite MapView'],
-//       [CustomTiles, 'Custom Tiles', true],
-//       [ZIndexMarkers, 'Position Markers with Z-index', true],
-//       [MapStyle, 'Customize the style of the map', true],
-//       [LegalLabel, 'Reposition the legal label', true],
-//       [SetNativePropsOverlays, 'Update native props', true],
-//       [CustomOverlay, 'Custom Overlay Component', true],
-//       [MapKml, 'Load Map with KML', true],
-//       [BugMarkerWontUpdate, 'BUG: Marker Won\'t Update (Android)', true],
-//       [ImageOverlayWithAssets, 'Image Overlay Component with Assets', true],
-//       [ImageOverlayWithURL, 'Image Overlay Component with URL', true],
-//       [OnPoiClick, 'On Poi Click', true],
-//     ]
-//     // Filter out examples that are not yet supported for Google Maps on iOS.
-//     .filter(example => ANDROID || (IOS && (example[2] || !this.state.useGoogleMaps)))
-//     .map(makeExampleMapper(IOS && this.state.useGoogleMaps))
-//     );
-//   }
-// }
+  componentWillMount() {
+    Location.watchPositionAsync(GEOLOCATION_OPTIONS, this.locationChanged);
+  }
 
-// const styles = StyleSheet.create({
-//   container: {
-//     ...StyleSheet.absoluteFillObject,
-//     justifyContent: 'flex-end',
-//     alignItems: 'center',
-//   },
-//   scrollview: {
-//     alignItems: 'center',
-//     paddingVertical: 40,
-//   },
-//   button: {
-//     flex: 1,
-//     marginTop: 10,
-//     backgroundColor: 'rgba(220,220,220,0.7)',
-//     paddingHorizontal: 18,
-//     paddingVertical: 12,
-//     borderRadius: 20,
-//   },
-//   back: {
-//     position: 'absolute',
-//     top: 20,
-//     left: 12,
-//     backgroundColor: 'rgba(255,255,255,0.4)',
-//     padding: 12,
-//     borderRadius: 20,
-//     width: 80,
-//     alignItems: 'center',
-//     justifyContent: 'center',
-//   },
-// });
+  locationChanged = (location) => {
+    //these will be set on button click
+    if (isPaused == true) {
+      pauseCoords.latitude = location.coords.latitude;
+      pauseCoords.longitude = location.coords.longitude;
+      pauseCoords.speed = location.coords.speed;
+      speeds.push(location.coords.speed);
+      pauseCoords.timestamp = location.timestamp;
+    }
+    if (isEndRide == true) {
+      endCoords.latitude = location.coords.latitude;
+      endCoords.longitude = location.coords.longitude;
+      endCoords.speed = location.coords.speed;
+      speeds.push(location.coords.speed);
+      endCoords.timestamp = location.timestamp;
+      var distance = this.calculateDistance(startCoords.latitude, endCoords.latitude, startCoords.longitude, startCoords.latitude);
+      var time = this.calculateTime(startCoords.timestamp, endCoords.timestamp);
+      var avSpeed = this.calculateAverageSpeed();
+      this.createRide(distance, time, avSpeed);
+    }
 
-// //export default MapTest;
+    speeds.push(location.coords.speed);
+
+    region = {
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+        latitudeDelta: 0.1,
+        longitudeDelta: 0.05,
+      },
+      this.setState({
+        location,
+        region
+      })
+  }
+
+  calculateDistance = (lat1, lat2, lon1, lon2) => {
+    lat1 = parseFloat(lat1);
+    lat2 = parseFloat(lat2);
+    lon1 = parseFloat(lon1);
+    lon2 = parseFloat(lon2);
+    var R = 6371e3;
+    var lat1Rad = lat1.toRadians();
+    var lat2Rad = lat2.toRadians();
+    var distLatRad = (lat2 - lat1).toRadians();
+    var distLonRad = (lon2 - lon1).toRadians();
+
+    var a = Math.sin((lat1Rad / 2)) * (Math.sin(distLatRad / 2)) +
+      Math.cos(lat1Rad) * Math.cos(lat2Rad) *
+      Math.sin(distLatRad / 2) * Math.sin(distLonRad / 2);
+    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+    var d = R * c;
+    console.log("distance", d);
+    //persist d as distance for ride
+    return d;
+  }
+
+  calculateTime = (startTime, endTime) => {
+    startTime = parseFloat(startTime);
+    endTime = parseFloat(endTime);
+    var tripTime = endTime - startTime;
+    console.log("trip length", tripTime);
+    var tripAsDate = new Date(tripTime);
+    console.log("trip readable", tripAsDate);
+    return tripTime;
+  }
+
+  calculateAverageSpeed = () => {
+    const arrAvg = speeds => speeds.reduce((a, b) => a + b, 0) / speeds.length;
+    return arrAvg;
+  }
+
+  createRide = (distance, time, speed) => {
+    //id will need to be based off of past rides?
+    ride.distance = distance;
+    ride.time = time;
+    ride.speed = speed;
+    this.saveRide();
+  }
+
+  saveRide = () => {
+    //TODO: persist
+    //u.rides.push(ride);
+  }
+
+  beginRide = () => {
+    this.setState({ startBtnStatus: false });
+    this.setState({ pauseBtnStatus: true });
+    this.setState({ endBtnStatus: true });
+  }
+  
+  pauseRide = () => {
+    this.setState({ startBtnStatus: false });
+    this.setState({ pauseBtnStatus: false });
+    this.setState({ resumeBtnStatus: true });
+    this.setState({ endBtnStatus: true });
+    isPaused = true;
+  }
+  
+  resumeRide = () => {
+    this.setState({ startBtnStatus: false });
+    this.setState({ pauseBtnStatus: true });
+    this.setState({ resumeBtnStatus: false });
+    this.setState({ endBtnStatus: true });
+    isPaused = false;
+  }
+  
+  endRide = () => {
+    this.setState({ startBtnStatus: true });
+    this.setState({ pauseBtnStatus: false });
+    this.setState({ resumeBtnStatus: false });
+    this.setState({ endBtnStatus: false });
+    isEndRide = true;
+  }
+
+
+
+  _getLocationAsync = async () => {
+    let {
+      status
+    } = await Permissions.askAsync(Permissions.LOCATION);
+    if (status !== 'granted') {
+      this.setState({
+        locationResult: 'Permission to access location was denied',
+      });
+    }
+
+    let locationResult = await Location.getCurrentPositionAsync({
+      enableHighAccuracy: true,
+    });
+
+    startCoords.latitude = locationResult.coords.latitude;
+    startCoords.longitude = locationResult.coords.latitude;
+    startCoords.speed = locationResult.coords.speed;
+    //persist speed
+    startCoords.timestamp = locationResult.timestamp;
+    //persist time
+
+    this.setState({
+      locationResult
+    });
+    let latitude = locationResult.coords.latitude;
+    this.setState({
+      latitude
+    });
+    let longitude = locationResult.coords.longitude;
+    this.setState({
+      longitude
+    });
+  }
+
+  render() {
+    let text = JSON.stringify(this.state.locationResult);
+    let latText = JSON.stringify(this.state.latitude);
+    let longText = JSON.stringify(this.state.longitude);
+    let latNum = parseFloat(latText);
+    let longNum = parseFloat(longText);
+    return (
+      <View style={styles.container}>
+        <Text>
+          Location: {text}
+        </Text>
+        <Text>
+          Latitude: {latText}
+        </Text>
+        <Text>
+          LatNum: {latNum}
+        </Text>
+        <Text>
+          Longitude: {longText}
+        </Text>
+        <Text>
+          LongNum: {longNum}
+        </Text>
+        <MapView
+        style={{ alignSelf: 'stretch', height: 200 }}
+        initialRegion={{
+                latitude: 40.760779,
+                longitude: -111.891047,
+                latitudeDelta: 0.0922,
+                longitudeDelta: 0.0421
+            }}
+        region={this.state.region}
+        onRegionChange={this._handleMapRegionChange}
+        showsUserLocation={true}
+        >
+        <MapView.Marker 
+          coordinate={{
+            latitude: latNum,
+            longitude: longNum,
+          }}
+          title={'Current Location'}
+          description={'I am here'}
+        />
+        </MapView>
+        <View style={styles.buttonView}>
+        {
+          this.state.pauseBtnStatus ? <View style={styles.buttonContainer}> <Button style={styles.button} title="Pause Ride" onPress={this.pauseRide} /> </View> : null
+        }
+        {
+          this.state.resumeBtnStatus ? <View style={styles.buttonContainer}> <Button style={styles.button} title="Resume Ride" onPress={this.resumeRide} /> </View> : null
+        }
+        {
+          this.state.endBtnStatus ? <View style={styles.buttonContainer}> <Button style={styles.button} title="End Ride" onPress={this.endRide} /> </View> : null
+        }
+        {
+          this.state.startBtnStatus ? <View style={styles.buttonContainer}> <Button style={styles.button} title="Start Ride" onPress={this.beginRide} /> </View> : null
+        }
+        </View>
+      </View>
+    );
+  }
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingTop: Constants.statusBarHeight,
+    backgroundColor: '#ecf0f1',
+  },
+  buttonView: {
+    display: 'flex',
+    flex: 1,
+    flexDirection: 'row',
+    marginTop: 5
+  },
+  button: {
+    width: 'max-content',
+    height: 'max-content'
+  },
+  buttonContainer: {
+    flex: 1,
+    height: 100,
+    width: 120
+  }
+});
