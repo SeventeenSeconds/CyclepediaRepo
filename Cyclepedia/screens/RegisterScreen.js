@@ -7,10 +7,14 @@ var user = {
     username: null,
     firstName: null,
     password: null,
-    contactName: null,
-    contactPhone: null,
-    contactEmail: null,
+    emergencyContact: null,
     rides: []
+};
+
+var emergencyContact = {
+    name: null,
+    phone: null,
+    email: null
 };
 
 var t = require('tcomb-form-native');
@@ -164,9 +168,10 @@ export default class RegisterScreen extends React.Component {
             user.username = userData.username;
             user.password = passHash;
             user.firstName = userData.firstName;
-            user.contactEmail = userData.contactEmail;
-            user.contactName = userData.contactName;
-            user.contactPhone = userData.contactPhone;
+            emergencyContact.name = userData.contactName;
+            emergencyContact.email = userData.contactEmail;
+            emergencyContact.phone = userData.contactPhone;
+            user.emergencyContact = emergencyContact;
             console.log("user obj ", user);
 
             // checking that the user doesn't exist
