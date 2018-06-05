@@ -13,7 +13,7 @@ const LoginStack = createStackNavigator({
 LoginStack.navigationOptions = {
   tabBarLabel: "Login",
   tabBarIcon: ({ focused, tintColor }) => {
-    <MaterialCommunityIcons name={`login`} size={25} color={tintColor} />;
+    return <MaterialCommunityIcons name={`login`} size={25} color={tintColor} />;
     },
     tabBarOptions: {
       activeTintColor: '#69A197',
@@ -30,7 +30,7 @@ const RegisterStack = createStackNavigator({
 RegisterStack.navigationOptions = {
   tabBarLabel: "Register",
   tabBarIcon: ({ focused, tintColor }) => {
-    <MaterialIcons name={`add-circle`} size={25} color={tintColor} />;
+    return <MaterialIcons name={`add-circle`} size={25} color={tintColor} />;
     },
     tabBarOptions: {
       activeTintColor: '#69A197',

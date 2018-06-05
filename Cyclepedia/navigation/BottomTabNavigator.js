@@ -13,7 +13,7 @@ const StatsStack = createStackNavigator({
 StatsStack.navigationOptions = {
     tabBarLabel: 'Stats',
     tabBarIcon: ({ focused, tintColor }) => {
-    <FontAwesome name={`bar-chart`} size={25} color={tintColor} />;
+    return <FontAwesome name={`bar-chart`} size={25} color={tintColor} />;
     },
     tabBarOptions: {
       activeTintColor: '#69A197',
@@ -30,7 +30,7 @@ const RideStack = createStackNavigator({
 RideStack.navigationOptions = {
     tabBarLabel: 'Ride',
     tabBarIcon: ({ focused, tintColor }) => {
-    <FontAwesome name={`bicycle`} size={25} color={tintColor} />;
+    return <FontAwesome name={`bicycle`} size={25} color={tintColor} />;
     },
     tabBarOptions: {
       activeTintColor: '#69A197',
