@@ -1,8 +1,8 @@
 import React from 'react';
 import {View, ScrollView, StyleSheet, Text, StatusBar, Button} from 'react-native';
-import {UserObject} from "./LoginScreen";
 import {FontAwesome} from '@expo/vector-icons';
 import EmergencyIcon from '../constants/EmergencyIcon';
+import MapTest from '../MapTest';
 
 export default class RideScreen extends React.Component {
     static navigationOptions = {
@@ -13,7 +13,7 @@ export default class RideScreen extends React.Component {
     render() {
         return (
             <View>
-                <Text>Ride Screen</Text>
+                <MapTest />
             </View>
         );
     }
