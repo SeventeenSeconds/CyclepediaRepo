@@ -19,6 +19,6 @@ const AppNavigator = createSwitchNavigator(
 export default class RootNavigation extends React.Component {
 
     render() {
-        return ( <AppNavigator/> );
+        return ( <AppNavigator /> );
     }
 }

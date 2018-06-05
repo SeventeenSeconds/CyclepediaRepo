@@ -71,6 +71,8 @@ const formStyles = {
     }
 }
 
+export var UserObject = '';
+
 export default class LoginScreen extends React.Component {
     static navigationOptions = {
         title: 'Login',
@@ -93,10 +95,10 @@ export default class LoginScreen extends React.Component {
                     // user exists, hash password in form, compare the returned users hashed password
                     u = JSON.parse(u);
                     const decryptedPassword = decrypt(u.password);
-
+                    UserObject = u;
                     if (decryptedPassword == userData.password) {
                         console.log("Passwords matched");
-                        this.props.navigation.navigate("Settings", {user: u});
+                        this.props.navigation.navigate("Bottom");
                     } else {
                         console.log("Incorrect Password");
                         this.setState({userMessage: "Incorrect password, please try again."});

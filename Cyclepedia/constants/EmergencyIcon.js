@@ -2,6 +2,7 @@ import React from 'react';
 import {View, Text, Button, TextInput} from 'react-native';
 import {FontAwesome} from '@expo/vector-icons';
 import DialogManager, { ScaleAnimation, DialogContent, DialogButton } from 'react-native-dialog-component';
+import {UserObject} from "../screens/LoginScreen";
 
 export default class EmergencyIcon extends React.Component {
 
@@ -21,10 +22,8 @@ export default class EmergencyIcon extends React.Component {
                         <Text>
                             Edit your emergency message:
                         </Text>
-                        //TODO: pass in the information from the user's account with props
-                        <TextInput value={"I'm dying, halp."} style={{height: 40, borderColor: 'gray', borderWidth: 1}}/>
-                        <DialogButton text={"DISMISS"} align={"center"} onPress={this.dismiss}/>
-                        <Button title={"Send Emergency Message"} onPress={this.sendMessage}>j</Button>
+                        <TextInput value={UserObject.contactName + " I'm dying, halp."} style={{height: 40, borderColor: 'gray', borderWidth: 1}}/>
+                        <Button title={"Send Emergency Message"} onPress={this.sendMessage}></Button>
                     </View>
                 </DialogContent>
             ),
