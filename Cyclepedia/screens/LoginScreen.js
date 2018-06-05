@@ -35,18 +35,6 @@ const options = {
     stylesheet: formStyles,
 };
 
-// encrypt = passwrd => {
-//
-//     var ciphertext = crypto.AES.encrypt(passwrd, 'secret key 123');
-//     console.log("encrypted text", ciphertext.toString());
-//
-//     var bytes = crypto.AES.decrypt(ciphertext.toString(), 'secret key 123');
-//     // var plaintext = bytes.toString(crypto.enc.Utf8);
-//     console.log("decrypted text " + bytes);
-//
-//     return ciphertext.toString();
-// }
-
 decrypt = passwrd => {
     var bytes = crypto.AES.decrypt(passwrd, 'secret key 123');
     var plaintext = bytes.toString(crypto.enc.Utf8);
