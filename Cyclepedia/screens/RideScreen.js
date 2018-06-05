@@ -1,13 +1,8 @@
 import React from 'react';
 import {View, ScrollView, StyleSheet, Text, StatusBar, Button} from 'react-native';
-// import TopTabNavigator from '../navigation/TopTabNavigator';
 import {FontAwesome} from '@expo/vector-icons';
 import EmergencyIcon from '../constants/EmergencyIcon';
-import ScrollPageComponent from '../constants/ScrollPageComponent'
-
-// stupidTest = <Button><i></i></Button>;
-emergencyPopUp = <FontAwesome name={'exclamation-circle'} size={25} color={'gray'}/>;
-
+import MapTest from '../MapTest';
 
 export default class RideScreen extends React.Component {
     static navigationOptions = {
@@ -18,7 +13,7 @@ export default class RideScreen extends React.Component {
     render() {
         return (
             <View>
-                <Text>Ride Screen</Text>
+                <MapTest />
             </View>
         );
     }
